@@ -85,7 +85,7 @@ func (index *blockIndex) indexBlock(blockIdxInfo *blockIdxInfo) error {
 		logger.Debug("Not indexing block... as nothing to index")
 		return nil
 	}
-	logger.Debugf("Indexing block [%s]", blockIdxInfo)
+	// logger.Debugf("Indexing block [%s]", blockIdxInfo)
 	flp := blockIdxInfo.flp
 	txOffsets := blockIdxInfo.txOffsets
 	blkNum := blockIdxInfo.blockNum
@@ -111,7 +111,7 @@ func (index *blockIndex) indexBlock(blockIdxInfo *blockIdxInfo) error {
 	if index.isAttributeIndexed(IndexableAttrTxID) {
 		for i, txoffset := range txOffsets {
 			txFlp := newFileLocationPointer(flp.fileSuffixNum, flp.offset, txoffset.loc)
-			logger.Debugf("Adding txLoc [%s] for tx ID: [%s] to txid-index", txFlp, txoffset.txID)
+			// logger.Debugf("Adding txLoc [%s] for tx ID: [%s] to txid-index", txFlp, txoffset.txID)
 			txFlpBytes, marshalErr := txFlp.marshal()
 			if marshalErr != nil {
 				return marshalErr

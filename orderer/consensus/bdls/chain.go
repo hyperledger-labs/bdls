@@ -791,7 +791,7 @@ func (c *Chain) Start() {
 
 	go c.startConsensus(c.config)
 	go c.run()
-	// go c.TestMultiClient()
+	go c.TestMultiClient()
 
 }
 
@@ -928,18 +928,21 @@ func (c *Chain) startConsensus(config *bdls.Config) error {
 			}
 		}(peers[k])
 	}
+
 	c.transportLayer = transportLayer
+
 	for {
 		<-updateTick.C
 		c.transportLayer.Update()
 		height, round, state := c.transportLayer.GetLatestState()
 		if height > c.lastBlock.Header.Number {
-			c.Logger.Infof("*** Inside the updateTick and putting data on applyC ***")
+			// c.Logger.Infof("*** Inside the updateTick and putting data on applyC ***")
 			go func() {
 				c.applyC <- apply{height: height, round: round, state: state}
 			}()
 		}
 	}
+
 	/*
 	   	// c.Order(env, 0)
 	   	var bc *blockCreator
@@ -1039,7 +1042,7 @@ func (c *Chain) apply(height uint64, round uint64, data bdls.State) {
 		c.Logger.Errorf("failed to unmarshal bdls State to block: %s", err)
 	}
 
-	c.Logger.Infof("Unmarshal bdls State to \r\n block data: %v ", newBlock.Data)
+	// c.Logger.Infof("Unmarshal bdls State to \r\n block data: %v ", newBlock.Data)
 
 	c.Logger.Infof("lastBlock number before write decide block Number : %v ", c.lastBlock.Header.Number)
 

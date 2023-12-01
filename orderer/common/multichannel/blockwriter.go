@@ -7,7 +7,9 @@ SPDX-License-Identifier: Apache-2.0
 package multichannel
 
 import (
+	"math"
 	"sync"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	cb "github.com/hyperledger/fabric-protos-go/common"
@@ -187,6 +189,15 @@ func (bw *BlockWriter) WriteBlockSync(block *cb.Block, encodedMetadataValue []by
 	bw.commitBlock(encodedMetadataValue)
 }
 
+var (
+	startTime time.Time
+	endTime   time.Time
+)
+
+func SetStartTimer() {
+	startTime = time.Now()
+}
+
 // commitBlock should only ever be invoked with the bw.committingBlock held
 // this ensures that the encoded config sequence numbers stay in sync
 func (bw *BlockWriter) commitBlock(encodedMetadataValue []byte) {
@@ -200,6 +211,10 @@ func (bw *BlockWriter) commitBlock(encodedMetadataValue []byte) {
 	if err != nil {
 		logger.Panicf("[channel: %s] Could not append block: %s", bw.support.ChannelID(), err)
 	}
+	endTime = time.Now()
+	diff := endTime.Sub(startTime)
+	logger.Infof("HHHHHH The total time of execution is: %v with TPS: %f HHHHHH", diff, float64(10000*math.Pow(10, 9))/float64(diff))
+
 	logger.Debugf("[channel: %s] Wrote block [%d]", bw.support.ChannelID(), bw.lastBlock.GetHeader().Number)
 }
 

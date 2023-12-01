@@ -378,6 +378,8 @@ func (c *Chain) Start() {
 
 	go c.gc()
 	go c.run()
+	
+	go c.TestMultiClient()
 
 	es := c.newEvictionSuspector()
 
