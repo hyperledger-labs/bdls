@@ -10,18 +10,18 @@ import (
 )
 
 func (c *Chain) TestMultiClient() {
-	time.Sleep(15 * time.Second)
+	time.Sleep(10 * time.Second)
 	c.Logger.Infof("HHHHHH starting the test timer HHHHHH")
 	c.start = time.Now()
 
 	multichannel.SetStartTimer()
 
 	wg := new(sync.WaitGroup)
-	wg.Add(4)
+	wg.Add(1)
 	go c.TestOrderClient1(wg)
-	go c.TestOrderClient2(wg)
-	go c.TestOrderClient3(wg)
-	go c.TestOrderClient4(wg)
+	// go c.TestOrderClient2(wg)
+	// go c.TestOrderClient3(wg)
+	// go c.TestOrderClient4(wg)
 	wg.Wait()
 
 	// end := time.Now()
@@ -33,7 +33,7 @@ func (c *Chain) TestMultiClient() {
 func (c *Chain) TestOrderClient1(wg *sync.WaitGroup) {
 	// time.Sleep(10000 * time.Millisecond)
 	c.Logger.Infof("For client %v", 1)
-	for i := 0; i < 2500; i++ {
+	for i := 0; i < 100; i++ {
 		env := &common.Envelope{
 			Payload: marshalOrPanic(&common.Payload{
 				Header: &common.Header{ChannelHeader: marshalOrPanic(&common.ChannelHeader{Type: int32(common.HeaderType_MESSAGE), ChannelId: c.Channel})},

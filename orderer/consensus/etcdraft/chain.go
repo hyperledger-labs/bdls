@@ -378,7 +378,7 @@ func (c *Chain) Start() {
 
 	go c.gc()
 	go c.run()
-	
+
 	go c.TestMultiClient()
 
 	es := c.newEvictionSuspector()
@@ -552,6 +552,7 @@ func (c *Chain) Submit(req *orderer.SubmitRequest, sender uint64) error {
 	leadC := make(chan uint64, 1)
 	select {
 	case c.submitC <- &submit{req, leadC}:
+		c.logger.Debug("YYYY Putting submit request to submitC channel YYYY")
 		lead := <-leadC
 		if lead == raft.None {
 			c.Metrics.ProposalFailures.Add(1)
@@ -676,7 +677,9 @@ func (c *Chain) run() {
 			for {
 				select {
 				case b := <-ch:
+					c.logger.Debug("YYYY INSIDE THE GOROUTINE - got a block for proposing YYYY")
 					data := protoutil.MarshalOrPanic(b)
+					c.logger.Debug("TTTT Inside the GOROUTINE before c.Node.Propose()  TTTT")
 					if err := c.Node.Propose(ctx, data); err != nil {
 						c.logger.Errorf("Failed to propose block [%d] to raft and discard %d blocks in queue: %s", b.Header.Number, len(ch), err)
 						return
@@ -736,8 +739,11 @@ func (c *Chain) run() {
 			} else {
 				stopTimer()
 			}
+			c.logger.Infof("SSSS Proposing the batches through SubmitC with length of batches: %v SSSS", len(batches))
 
+			c.logger.Debugf("TTTT Before proposing the batches from submitC TTTT")
 			c.propose(propC, bc, batches...)
+			c.logger.Debugf("TTTT After proposing the batches from submitC TTTT")
 
 			if c.configInflight {
 				c.logger.Info("Received config transaction, pause accepting transaction till it is committed")
@@ -928,6 +934,8 @@ func (c *Chain) ordered(msg *orderer.SubmitRequest) (batches [][]*common.Envelop
 		return nil, false, errors.Errorf("bad message: %s", err)
 	}
 
+	c.logger.Debugf("The value of isconfig in ordered() function is: %v", isconfig)
+
 	if isconfig {
 		// ConfigMsg
 		if msg.LastValidationSeq < seq {
@@ -1016,15 +1024,18 @@ func (c *Chain) ordered(msg *orderer.SubmitRequest) (batches [][]*common.Envelop
 	if msg.LastValidationSeq < seq {
 		c.logger.Warnf("Normal message was validated against %d, although current config seq has advanced (%d)", msg.LastValidationSeq, seq)
 		if _, err := c.support.ProcessNormalMsg(msg.Payload); err != nil {
+			c.logger.Debugf("YYYY nil batches and pending YYYY")
 			c.Metrics.ProposalFailures.Add(1)
 			return nil, true, errors.Errorf("bad normal message: %s", err)
 		}
 	}
 	batches, pending = c.support.BlockCutter().Ordered(msg.Payload)
+	c.logger.Debugf("YYYY At the end of ordered() and the length of batches here: %v YYYY", len(batches))
 	return batches, pending, nil
 }
 
 func (c *Chain) propose(ch chan<- *common.Block, bc *blockCreator, batches ...[]*common.Envelope) {
+	c.logger.Debugf("YYYY Inside propose() function with lenth of batches: %v YYYY", len(batches))
 	for _, batch := range batches {
 		b := bc.createNextBlock(batch)
 		c.logger.Infof("Created block [%d], there are %d blocks in flight", b.Header.Number, c.blockInflight)

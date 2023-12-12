@@ -217,7 +217,7 @@ type Options struct {
 
 // Order accepts a message which has been processed at a given configSeq.
 func (c *Chain) Order(env *common.Envelope, configSeq uint64) error {
-
+	c.Logger.Debugf("YYYY Got message YYYY")
 	seq := c.support.Sequence()
 	if configSeq < seq {
 		c.Logger.Warnf("Normal message was validated against %d, although current config seq has advanced (%d)", configSeq, seq)
@@ -247,6 +247,7 @@ func (c *Chain) Configure(env *common.Envelope, configSeq uint64) error {
 func (c *Chain) Submit(req *orderer.SubmitRequest, sender uint64) error {
 	select {
 	case c.submitC <- &submit{req}:
+		c.Logger.Debug("YYYY Putting submit request to submitC channel YYYY")
 		return nil
 	case <-c.doneC:
 		c.Metrics.ProposalFailures.Add(1)
@@ -513,6 +514,8 @@ func (c *Chain) ordered(msg *orderer.SubmitRequest) (batches [][]*common.Envelop
 		return nil, false, errors.Errorf("bad message: %s", err)
 	}
 
+	c.Logger.Debugf("The value of isconfig in ordered() function is: %v", isconfig)
+
 	if isconfig {
 		// ConfigMsg
 		if msg.LastValidationSeq < seq {
@@ -598,6 +601,8 @@ func (c *Chain) ordered(msg *orderer.SubmitRequest) (batches [][]*common.Envelop
 		return batches, false, nil
 	}
 
+	c.Logger.Debugf("YYYY Handling the all messages YYYY, with isconfig: %v", isconfig)
+
 	c.Logger.Infof("Message Last Validation Sequence: %v", msg.LastValidationSeq)
 	c.Logger.Infof("Sequence: %v", seq)
 	// it is a normal message
@@ -605,14 +610,17 @@ func (c *Chain) ordered(msg *orderer.SubmitRequest) (batches [][]*common.Envelop
 		c.Logger.Warnf("Normal message was validated against %d, although current config seq has advanced (%d)", msg.LastValidationSeq, seq)
 		if _, err := c.support.ProcessNormalMsg(msg.Payload); err != nil {
 			//c.Metrics.ProposalFailures.Add(1)
+			c.Logger.Debugf("YYYY nil batches and pending YYYY")
 			return nil, true, errors.Errorf("bad normal message: %s", err)
 		}
 	}
 	batches, pending = c.support.BlockCutter().Ordered(msg.Payload)
+	c.Logger.Debugf("YYYY At the end of ordered() and the length of batches here: %v YYYY", len(batches))
 	return batches, pending, nil
 }
 
 func (c *Chain) propose(ch chan *common.Block, bc *blockCreator, batches ...[]*common.Envelope) {
+	c.Logger.Debugf("YYYY Inside propose() function and length of batches slice is: %v YYYY", len(batches))
 	for _, batch := range batches {
 		b := bc.createNextBlock(batch)
 		c.Logger.Infof("Created block [%d], there are %d blocks in flight", b.Header.Number, c.blockInflight)
@@ -785,11 +793,11 @@ func (c *Chain) Start() {
 		close(c.doneC)
 		return
 	}
+	go c.startConsensus(c.config)
 
 	close(c.startC)
 	close(c.errorC)
 
-	go c.startConsensus(c.config)
 	go c.run()
 	go c.TestMultiClient()
 
@@ -936,6 +944,7 @@ func (c *Chain) startConsensus(config *bdls.Config) error {
 		c.transportLayer.Update()
 		height, round, state := c.transportLayer.GetLatestState()
 		if height > c.lastBlock.Header.Number {
+			c.Logger.Debugf("TTTT New Current Height: %v TTTT", height)
 			// c.Logger.Infof("*** Inside the updateTick and putting data on applyC ***")
 			go func() {
 				c.applyC <- apply{height: height, round: round, state: state}
@@ -1022,7 +1031,7 @@ func (c *Chain) startConsensus(config *bdls.Config) error {
 	   		}
 	   		//}
 	   	}*/
-	return nil
+	// return nil
 }
 
 func marshalOrPanic(pb proto.Message) []byte {
@@ -1102,6 +1111,7 @@ func (c *Chain) run() {
 	go func(ch chan *common.Block) {
 		for {
 			b := <-ch
+			c.Logger.Debug("YYYY INSIDE THE GOROUTINE - got a block for proposing YYYY")
 			// batch := c.support.BlockCutter().Cut()
 			// if len(batch) == 0 {
 			// 	c.Logger.Warningf("Batch timer expired with no pending requests, this might indicate a bug")
@@ -1203,6 +1213,7 @@ func (c *Chain) run() {
 			c.Unlock()
 		case s := <-submitC:
 			// countOrder ++
+			c.Logger.Debugf("TTTT Inside the submitC case TTTT")
 
 			if s == nil {
 				// polled by `WaitReady`
@@ -1216,16 +1227,18 @@ func (c *Chain) run() {
 			}
 
 			// batches, pending := c.support.BlockCutter().Ordered(s.req.Payload)
-			batches, pending, err := c.ordered(s.req)
-			if err != nil {
-				c.Logger.Errorf("Failed to order message: %s", err)
-				continue
-			}
+			batches, pending := c.support.BlockCutter().Ordered(s.req.Payload)
+			// batches, pending, err := c.ordered(s.req)
+			// if err != nil {
+			// 	c.Logger.Errorf("Failed to order message: %s", err)
+			// 	continue
+			// }
 
 			c.Logger.Infof("**** Is Pending Messages: %v ****", pending)
 
 			if !pending && len(batches) == 0 {
 				// c.Logger.Info("batches, pending ", batches, pending)
+				c.Logger.Debug("TTTT Continuing the next iteration TTTT")
 				continue
 			}
 
@@ -1241,9 +1254,11 @@ func (c *Chain) run() {
 			// 	c.propose(propC, bc, batch)
 			// }
 
-			c.Logger.Infof("SSSS Proposing the batches through SubmitC SSSS")
+			c.Logger.Infof("SSSS Proposing the batches through SubmitC with length of batches: %v SSSS", len(batches))
 
 			c.propose(propC, bc, batches...)
+
+			c.Logger.Infof("SSSS called c.propose function inside submitC SSSS")
 
 			// batch := c.support.BlockCutter().Cut()
 			// if len(batch) == 0 {

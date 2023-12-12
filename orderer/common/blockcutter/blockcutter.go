@@ -73,6 +73,7 @@ func NewReceiverImpl(channelID string, sharedConfigFetcher OrdererConfigFetcher,
 // Note that messageBatches can not be greater than 2.
 func (r *receiver) Ordered(msg *cb.Envelope) (messageBatches [][]*cb.Envelope, pending bool) {
 	if len(r.pendingBatch) == 0 {
+		logger.Debugf("YYYY r.pendingBatch is length: 0 YYYY")
 		// We are beginning a new batch, mark the time
 		r.PendingBatchStartTime = time.Now()
 	}
@@ -83,19 +84,29 @@ func (r *receiver) Ordered(msg *cb.Envelope) (messageBatches [][]*cb.Envelope, p
 	}
 
 	batchSize := ordererConfig.BatchSize()
+	logger.Debugf("YYYY Value of batchSize: %v YYYY", batchSize)
 
 	messageSizeBytes := messageSizeBytes(msg)
+	logger.Debugf("YYYY Value of messageSizeBytes: %v YYYY", messageSizeBytes)
+
 	if messageSizeBytes > batchSize.PreferredMaxBytes {
+		logger.Debugf("YYYY The messageSizeBytes %v and batchSize.PreferredMaxBytes: %v YYYY", messageSizeBytes, batchSize.PreferredMaxBytes)
+
 		logger.Debugf("The current message, with %v bytes, is larger than the preferred batch size of %v bytes and will be isolated.", messageSizeBytes, batchSize.PreferredMaxBytes)
 
 		// cut pending batch, if it has any messages
 		if len(r.pendingBatch) > 0 {
+			logger.Debugf("YYYY The length of r.pendingBatch: %v YYYY", len(r.pendingBatch))
+
 			messageBatch := r.Cut()
 			messageBatches = append(messageBatches, messageBatch)
 		}
 
 		// create new batch with single message
 		messageBatches = append(messageBatches, []*cb.Envelope{msg})
+
+		logger.Debugf("YYYY Currently the messageBatches is: %v YYYY", messageBatches)
+		logger.Debugf("YYYY The length of the messageBatches is: %v YYYY", len(messageBatches))
 
 		// Record that this batch took no time to fill
 		r.Metrics.BlockFillDuration.With("channel", r.ChannelID).Observe(0)
@@ -104,24 +115,35 @@ func (r *receiver) Ordered(msg *cb.Envelope) (messageBatches [][]*cb.Envelope, p
 	}
 
 	messageWillOverflowBatchSizeBytes := r.pendingBatchSizeBytes+messageSizeBytes > batchSize.PreferredMaxBytes
+	logger.Debugf("YYYY Value of messageWillOverflowBatchSizeBytes: %v YYYY", messageWillOverflowBatchSizeBytes)
 
 	if messageWillOverflowBatchSizeBytes {
 		logger.Debugf("The current message, with %v bytes, will overflow the pending batch of %v bytes.", messageSizeBytes, r.pendingBatchSizeBytes)
 		logger.Debugf("Pending batch would overflow if current message is added, cutting batch now.")
+		
 		messageBatch := r.Cut()
 		r.PendingBatchStartTime = time.Now()
 		messageBatches = append(messageBatches, messageBatch)
 	}
 
 	logger.Debugf("Enqueuing message into batch")
+	logger.Debugf("YYYY Appending the messages to the pendingBatch and incrementing the size of pendingBatch YYYY")
+
 	r.pendingBatch = append(r.pendingBatch, msg)
+
+	logger.Debugf("YYYY Size of the pendingBatchSizeBytes is: %v and length of r.pendingBatch is: %v YYYY", r.pendingBatchSizeBytes, len(r.pendingBatch))
+	
 	r.pendingBatchSizeBytes += messageSizeBytes
 	pending = true
 
 	if uint32(len(r.pendingBatch)) >= batchSize.MaxMessageCount {
+		logger.Debugf("YYYY Length of r.pendingBatch is >= batchSize.MaxMessageCount YYYY")
+		
 		logger.Debugf("Batch size met, cutting batch")
 		messageBatch := r.Cut()
 		messageBatches = append(messageBatches, messageBatch)
+		logger.Debugf("YYYY Length of message batches now: %v YYYY", len(messageBatch))
+		logger.Debugf("YYYY messageBatches: %#v YYYY", messageBatch)
 		pending = false
 	}
 
