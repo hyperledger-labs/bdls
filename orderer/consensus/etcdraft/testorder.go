@@ -36,7 +36,7 @@ func (c *Chain) TestMultiClient() {
 func (c *Chain) TestOrderClient1(wg *sync.WaitGroup) {
 	// time.Sleep(10000 * time.Millisecond)
 	c.logger.Infof("For client %v", 1)
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 100000; i++ {
 		env := &common.Envelope{
 			Payload: marshalOrPanic(&common.Payload{
 				Header: &common.Header{ChannelHeader: marshalOrPanic(&common.ChannelHeader{Type: int32(common.HeaderType_MESSAGE), ChannelId: c.channelID})},
