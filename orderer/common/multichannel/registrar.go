@@ -444,19 +444,19 @@ func (r *Registrar) newChain(configtx *cb.Envelope) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
-	/*	channelName, err := channelNameFromConfigTx(configtx)
-		if err != nil {
-			logger.Warnf("Failed extracting channel name: %v", err)
+	/*channelName, err := channelNameFromConfigTx(configtx)
+	if err != nil {
+		logger.Warnf("Failed extracting channel name: %v", err)
+		return
+	}
+
+	// fixes https://github.com/hyperledger/fabric/issues/2931
+	if existingChain, exists := r.chains[channelName]; exists {
+		if _, isRaftChain := existingChain.Chain.(*etcdraft.Chain); isRaftChain {
+			logger.Infof("Channel %s already created, skipping its creation", channelName)
 			return
 		}
-
-		// fixes https://github.com/hyperledger/fabric/issues/2931
-		if existingChain, exists := r.chains[channelName]; exists {
-			if _, isRaftChain := existingChain.Chain.(*etcdraft.Chain); isRaftChain {
-				logger.Infof("Channel %s already created, skipping its creation", channelName)
-				return
-			}
-		}*/
+	}*/
 
 	cs := r.createNewChain(configtx)
 	cs.start()

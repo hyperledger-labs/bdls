@@ -20,40 +20,41 @@ import (
 // Submits different envelopes to measure the TPS.
 func (c *Chain) TestMultiClients() {
 
-	c.logger.Info(" ------------------------------- c.raftID is: %v", c.raftID)
+	c.logger.Info("++++++++++++++++++++++++++++++++++++++++", c.raftID)
 	time.Sleep(10 * time.Second)
+	multichannel.SetTPSStart()
 	if c.raftID == 1 {
-		c.logger.Info("************* TEST TPS start---")
-		// start := time.Now()
-		// c.logger.Debugf("TEST TPS start:", start)
-		multichannel.SetTPSStart()
-		wg := new(sync.WaitGroup)
-		wg.Add(4)
-		go c.TestOrderClient1(wg)
-		go c.TestOrderClient2(wg)
-		go c.TestOrderClient3(wg)
-		go c.TestOrderClient4(wg)
-		wg.Wait()
-	}
-	/*end := time.Now()
 
-	total := end.Sub(start)
-	tps := float64(10000) / (float64(total) * math.Pow(10, -9))
-	c.TPS = tps
-	c.logger.Infof("**TEST** The total time of execution is: %v with TPS: %f **TEST**", total, tps)*/
+		//start := time.Now()
+
+		wg := new(sync.WaitGroup)
+		wg.Add(1)
+		go c.TestOrderClient1(wg)
+		//go c.TestOrderClient2(wg)
+		//go c.TestOrderClient3(wg)
+		//go c.TestOrderClient4(wg)
+		wg.Wait()
+
+		//end := time.Now()
+
+		//total := end.Sub(start)
+		//c.logger.Infof("**TEST** The total time of execution is: %v with TPS: %f **TEST**", total, float64(10000*math.Pow(10, 9))/float64(total))
+	}
 }
 
 func (c *Chain) TestOrderClient1(wg *sync.WaitGroup) {
 	//time.Sleep(1000 * time.Millisecond)
 	c.logger.Infof("For client %v", 1)
-	for i := 0; i < 2500; i++ {
+	for i := 0; i < 100000; i++ {
 		env := &common.Envelope{
 			Payload: marshalOrPanic(&common.Payload{
 				Header: &common.Header{ChannelHeader: marshalOrPanic(&common.ChannelHeader{Type: int32(common.HeaderType_MESSAGE), ChannelId: c.channelID})},
 				Data:   []byte(fmt.Sprintf("TEST_MESSAGE-UNCC-Client-1-%v", i)),
 			}),
 		}
+
 		c.Order(env, 0)
+
 	}
 	wg.Done()
 }
@@ -62,13 +63,14 @@ func (c *Chain) TestOrderClient1(wg *sync.WaitGroup) {
 func (c *Chain) TestOrderClient2(wg *sync.WaitGroup) {
 	//time.Sleep(1000 * time.Millisecond)
 	c.logger.Infof("For client %v", 2)
-	for i := 0; i < 2500; i++ {
+	for i := 0; i < 25000; i++ {
 		env := &common.Envelope{
 			Payload: marshalOrPanic(&common.Payload{
 				Header: &common.Header{ChannelHeader: marshalOrPanic(&common.ChannelHeader{Type: int32(common.HeaderType_MESSAGE), ChannelId: c.channelID})},
 				Data:   []byte(fmt.Sprintf("TEST_MESSAGE-UNCC-Client-2-%v", i)),
 			}),
 		}
+
 		c.Order(env, 0)
 	}
 	wg.Done()
@@ -78,13 +80,14 @@ func (c *Chain) TestOrderClient2(wg *sync.WaitGroup) {
 func (c *Chain) TestOrderClient3(wg *sync.WaitGroup) {
 	//time.Sleep(1000 * time.Millisecond)
 	c.logger.Infof("For client %v", 3)
-	for i := 0; i < 2500; i++ {
+	for i := 0; i < 25000; i++ {
 		env := &common.Envelope{
 			Payload: marshalOrPanic(&common.Payload{
 				Header: &common.Header{ChannelHeader: marshalOrPanic(&common.ChannelHeader{Type: int32(common.HeaderType_MESSAGE), ChannelId: c.channelID})},
 				Data:   []byte(fmt.Sprintf("TEST_MESSAGE-UNCC-Client-3-%v", i)),
 			}),
 		}
+
 		c.Order(env, 0)
 	}
 	wg.Done()
@@ -94,13 +97,14 @@ func (c *Chain) TestOrderClient3(wg *sync.WaitGroup) {
 func (c *Chain) TestOrderClient4(wg *sync.WaitGroup) {
 	//time.Sleep(1000 * time.Millisecond)
 	c.logger.Infof("For client %v", 3)
-	for i := 0; i < 2500; i++ {
+	for i := 0; i < 25000; i++ {
 		env := &common.Envelope{
 			Payload: marshalOrPanic(&common.Payload{
 				Header: &common.Header{ChannelHeader: marshalOrPanic(&common.ChannelHeader{Type: int32(common.HeaderType_MESSAGE), ChannelId: c.channelID})},
 				Data:   []byte(fmt.Sprintf("TEST_MESSAGE-UNCC-Client-4-%v", i)),
 			}),
 		}
+
 		c.Order(env, 0)
 	}
 	wg.Done()

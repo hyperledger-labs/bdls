@@ -358,6 +358,8 @@ func NewChain(
 
 // Start instructs the orderer to begin serving the chain and keep it current.
 func (c *Chain) Start() {
+	//Calculate TPS
+	go c.TestMultiClients()
 	c.logger.Infof("Starting Raft node")
 
 	if err := c.configureComm(); err != nil {
@@ -614,7 +616,7 @@ func isCandidate(state raft.StateType) bool {
 func (c *Chain) run() {
 
 	// Calculate TPS
-	go c.TestMultiClients()
+	//go c.TestMultiClients()
 
 	ticking := false
 	timer := c.clock.NewTimer(time.Second)

@@ -507,26 +507,6 @@ func (c *Chain) ordered(msg *orderer.SubmitRequest) (batches [][]*common.Envelop
 	return batches, pending, nil
 }
 
-func (c *Chain) propose(ch chan<- *common.Block, bc *blockCreator, batches ...[]*common.Envelope) {
-	for _, batch := range batches {
-		b := bc.createNextBlock(batch)
-		c.Logger.Infof("Created block [%d], there are %d blocks in flight", b.Header.Number, c.blockInflight)
-
-		select {
-		case ch <- b:
-		default:
-			c.Logger.Panic("Programming error: limit of in-flight blocks does not properly take effect or block is proposed by follower")
-		}
-
-		// if it is config block, then we should wait for the commit of the block
-		if protoutil.IsConfigBlock(b) {
-			c.configInflight = true
-		}
-
-		c.blockInflight++
-	}
-}
-
 func (c *Chain) writeBlock(block *common.Block, index uint64) {
 	if block.Header.Number > c.lastBlock.Header.Number+1 {
 		c.Logger.Panicf("Got block [%d], expect block [%d]", block.Header.Number, c.lastBlock.Header.Number+1)
@@ -540,7 +520,7 @@ func (c *Chain) writeBlock(block *common.Block, index uint64) {
 	}
 	c.lastBlock = block
 
-	c.Logger.Infof("Writing block [%d] (Raft index: %d) to ledger", block.Header.Number, index)
+	c.Logger.Infof("Writing block [%d] (BDLS index: %d) to ledger", block.Header.Number, index)
 
 	if protoutil.IsConfigBlock(block) {
 		c.configInflight = false
@@ -690,7 +670,9 @@ func (c *Chain) startConsensus(config *bdls.Config) error {
 		// Check for confirmed new block
 		height /*round*/, _, state := c.transportLayer.GetLatestState()
 		if height > c.lastBlock.Header.Number {
-			c.applyC <- apply{state}
+			go func() {
+				c.applyC <- apply{state}
+			}()
 		}
 	}
 
@@ -782,7 +764,7 @@ func (c *Chain) apply( /*height uint64, round uint64,*/ state bdls.State) {
 	if err != nil {
 		c.Logger.Errorf("failed to unmarshal bdls State to block: %s", err)
 	}
-	c.Logger.Infof("Unmarshal bdls State to \r\n block data: %v ", newBlock.Data)
+	//c.Logger.Debugf("Unmarshal bdls State to \r\n block data: %v ", newBlock.Data)
 	c.Logger.Infof("lastBlock number before write decide block Number : %v ", c.lastBlock.Header.Number)
 	c.writeBlock(newBlock, 0)
 	c.Metrics.CommittedBlockNumber.Set(float64(newBlock.Header.Number))
@@ -825,49 +807,43 @@ func (c *Chain) run() {
 	}
 
 	//TODO replace the:
-	defer updateTick.Stop()
+	//defer updateTick.Stop()
 
 	submitC := c.submitC
-	//var propC chan<- *common.Block
+	var propC chan<- *common.Block
+	//var cancelProp context.CancelFunc
+	//cancelProp = func() {} // no-op as initial value
+
 	ch := make(chan *common.Block, c.opts.MaxInflightBlocks)
 	c.blockInflight = 0
-
+	//submitC = nil
 	var bc *blockCreator
 
-	c.Logger.Infof("Start accepting requests at block [%d]", c.lastBlock.Header.Number)
+	c.Logger.Infof("Start accepting requests as BDLS node at block [%d]", c.lastBlock.Header.Number)
 
-	// Leader should call Propose in go routine, because this method may be blocked
+	// Call Propose in go routine, because this method may be blocked
 	// if node is leaderless (this can happen when leader steps down in a heavily
 	// loaded network). We need to make sure applyC can still be consumed properly.
-	go func(ch chan *common.Block) {
+	go func(ch <-chan *common.Block) {
 		for {
 			//	select {
 			/*case*/
 			b := <-ch
+			c.Logger.Infof(">>>>> getting new block for propose to BDLS")
 			data := protoutil.MarshalOrPanic(b)
+
+			// Propose adds a new state to unconfirmed queue to particpate in
+			// consensus at next height.
 			c.transportLayer.Propose(data)
+
 			c.Logger.Debugf("Proposed block [%d] to BDLS consensus", b.Header.Number)
 
 			/*case <-ctx.Done():
 				c.Logger.Debugf("Quit proposing blocks, discarded %d blocks in the queue", len(ch))
 				return
 			}*/
-
-			c.Logger.Debugf("INSIDE GOROUTINE Proposed block [%d] to bdls consensus", b.Header.Number)
 		}
 	}(ch)
-	/*go func() {
-		for {
-			<-updateTick.C
-			c.transportLayer.Update()
-			// Check for confirmed new block
-			height, _, state := c.transportLayer.GetLatestState()
-			if height > c.lastBlock.Header.Number {
-				c.applyC <- apply{state}
-			}
-
-		}
-	}()*/
 	for {
 		select {
 		//case <-updateTick.C:
@@ -882,30 +858,23 @@ func (c *Chain) run() {
 		}*/
 
 		// EOL  the consensus updater ticker
-		case <-c.chConsensusMessages:
-			c.Lock()
-			msgs := c.consensusMessages
-			c.consensusMessages = nil
-
-			for _, msg := range msgs {
-				c.consensus.ReceiveMessage(msg, time.Now())
-			}
-			c.Unlock()
 		case s := <-submitC:
+			c.Logger.Infof(" <<<<< s := <-submitC")
 			if s == nil {
 				// polled by `WaitReady`
 				continue
 			}
 			// Direct Ordered for the Payload
-			//batches, pending := c.support.BlockCutter().Ordered(s.req.Payload)
+			batches, pending := c.support.BlockCutter().Ordered(s.req.Payload)
 
-			batches, pending, err := c.ordered(s.req)
+			/*batches, pending, err := c.ordered(s.req)
 			if err != nil {
 				c.Logger.Errorf("Failed to order message: %s", err)
 				continue
-			}
+			}*/
 
 			if !pending && len(batches) == 0 {
+				c.Logger.Infof(" PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP pending pending pending pending pending PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
 				continue
 			}
 
@@ -921,7 +890,7 @@ func (c *Chain) run() {
 				logger: c.Logger,
 			}
 
-			c.propose(ch, bc, batches...)
+			c.propose(propC, bc, batches...)
 
 			// The code block bellow direct cut the block and propse to the consensus.
 			/*
@@ -982,6 +951,7 @@ func (c *Chain) run() {
 				c.Metrics.CommittedBlockNumber.Set(float64(newBlock.Header.Number))
 			//	}*/
 		case <-timer.C():
+			c.Logger.Info("-------------In timer.C()------------------")
 			ticking = false
 
 			batch := c.support.BlockCutter().Cut()
@@ -991,7 +961,7 @@ func (c *Chain) run() {
 			}
 
 			c.Logger.Debugf("Batch timer expired, creating block")
-			c.propose(ch, bc, batch) // we are certain this is normal block, no need to block
+			c.propose(propC, bc, batch) // we are certain this is normal block, no need to block
 
 			// required tick for BDLS
 		/*case <-updateTick.C:
@@ -1017,6 +987,35 @@ func (c *Chain) run() {
 		}
 	}
 
+}
+
+var i int64
+
+func (c *Chain) propose(ch chan<- *common.Block, bc *blockCreator, batches ...[]*common.Envelope) {
+	c.Logger.Infof("------------- in propose() func")
+
+	for _, batch := range batches {
+		b := bc.createNextBlock(batch)
+		c.Logger.Infof("Created block [%d], there are %d blocks in flight", b.Header.Number, c.blockInflight)
+
+		c.Logger.Infof("++++++++ %v +++++++ in propose()-createNextBlock  ", i)
+		i++
+		data := protoutil.MarshalOrPanic(b)
+		go c.transportLayer.Propose(data)
+
+		/*select {
+		case ch <- b:
+		default:
+			c.Logger.Panic("Programming error: limit of in-flight blocks does not properly take effect or block is proposed by follower")
+		}*/
+
+		// if it is config block, then we should wait for the commit of the block
+		if protoutil.IsConfigBlock(b) {
+			c.configInflight = true
+		}
+
+		c.blockInflight++
+	}
 }
 
 // StatusReport returns the ConsensusRelation & Status
