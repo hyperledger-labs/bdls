@@ -68,7 +68,7 @@ const (
 	baseLatency               = 500 * time.Millisecond
 	maxBaseLatency            = 10 * time.Second
 	proposalCollectionTimeout = 3 * time.Second
-	updatePeriod              = 20 * time.Millisecond
+	updatePeriod              = 1 * time.Millisecond
 	resendPeriod              = 10 * time.Second
 )
 
@@ -637,6 +637,7 @@ func (c *Chain) propose(ch chan *common.Block, bc *blockCreator, batches ...[]*c
 		}
 
 		c.blockInflight++
+		c.Logger.Debugf("YYYY Inside propose(); the blocks in flight is: %v YYYY", c.blockInflight)
 	}
 }
 
@@ -650,6 +651,7 @@ func (c *Chain) writeBlock(block *common.Block, index uint64) {
 
 	if c.blockInflight > 0 {
 		c.blockInflight-- // only reduce on leader
+		c.Logger.Debugf("YYYY Inside writeBlock() function; the blockInFlight is: %v YYYY", c.blockInflight)
 	}
 	c.lastBlock = block
 
@@ -939,17 +941,24 @@ func (c *Chain) startConsensus(config *bdls.Config) error {
 
 	c.transportLayer = transportLayer
 
+	// we are calling update every 20ms
+	go func() {
+		for {
+			c.transportLayer.Update()
+		}
+	}()
+
 	for {
-		<-updateTick.C
-		c.transportLayer.Update()
+
 		height, round, state := c.transportLayer.GetLatestState()
 		if height > c.lastBlock.Header.Number {
-			c.Logger.Debugf("TTTT New Current Height: %v TTTT", height)
+			// c.Logger.Debugf("TTTT New Current Height: %v TTTT", height)
 			// c.Logger.Infof("*** Inside the updateTick and putting data on applyC ***")
 			go func() {
 				c.applyC <- apply{height: height, round: round, state: state}
 			}()
 		}
+		<-updateTick.C
 	}
 
 	/*
@@ -1106,7 +1115,8 @@ func (c *Chain) run() {
 	var bc *blockCreator
 	c.Logger.Infof("Start accepting requests  at block [%d]", c.lastBlock.Header.Number)
 	// TODO in Propose()
-	propC := make(chan *common.Block, c.opts.MaxInflightBlocks) // 5 in-flight blocks in consenter.go
+	
+	propC := make(chan *common.Block) // 5 in-flight blocks in consenter.go
 
 	go func(ch chan *common.Block) {
 		for {

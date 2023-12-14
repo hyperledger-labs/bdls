@@ -42,7 +42,7 @@ import (
 	"github.com/hyperledger/fabric/orderer/common/metadata"
 	"github.com/hyperledger/fabric/orderer/common/multichannel"
 	"github.com/hyperledger/fabric/orderer/consensus"
-	"github.com/hyperledger/fabric/orderer/consensus/etcdraft"
+	"github.com/hyperledger/fabric/orderer/consensus/bdls"
 	"github.com/hyperledger/fabric/protoutil"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
@@ -620,11 +620,11 @@ func initializeMultichannelRegistrar(
 	consenters := map[string]consensus.Consenter{}
 
 	// the orderer can start without channels at all and have an initialized cluster type consenter
-	etcdraftConsenter, _ /*clusterMetrics*/ := etcdraft.New(clusterDialer, conf, srvConf, srv, registrar, metricsProvider, bccsp)
-	consenters["etcdraft"] = etcdraftConsenter
+	// etcdraftConsenter, _ /*clusterMetrics*/ := etcdraft.New(clusterDialer, conf, srvConf, srv, registrar, metricsProvider, bccsp)
+	// consenters["etcdraft"] = etcdraftConsenter
 	// consenters["BFT"] = smartbft.New(dpmr.Registry(), signer, clusterDialer, conf, srvConf, srv, registrar, metricsProvider, clusterMetrics, bccsp)
 
-	// consenters["BFT"] = bdls.New(clusterDialer, conf, srvConf, srv, registrar, metricsProvider, bccsp)
+	consenters["BFT"] = bdls.New(clusterDialer, conf, srvConf, srv, registrar, metricsProvider, bccsp)
 
 	registrar.Initialize(consenters)
 	return registrar

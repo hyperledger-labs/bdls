@@ -900,6 +900,7 @@ func (c *Chain) writeBlock(block *common.Block, index uint64) {
 
 	if c.blockInflight > 0 {
 		c.blockInflight-- // only reduce on leader
+		c.logger.Debugf("YYYY Inside writeBlock() function; the blockInFlight is: %v YYYY", c.blockInflight)
 	}
 	c.lastBlock = block
 
@@ -1052,6 +1053,7 @@ func (c *Chain) propose(ch chan<- *common.Block, bc *blockCreator, batches ...[]
 		}
 
 		c.blockInflight++
+		c.logger.Debugf("YYYY Inside propose(); the blocks in flight is: %v YYYY", c.blockInflight)
 	}
 }
 
