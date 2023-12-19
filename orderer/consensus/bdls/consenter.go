@@ -95,7 +95,7 @@ func (c *Consenter) HandleChain(support consensus.ConsenterSupport, metadata *co
 	opts := Options{
 		RPCTimeout:        c.OrdererConfig.General.Cluster.RPCTimeout,
 		Consenters:        consenters,
-		MaxInflightBlocks: 5,
+		MaxInflightBlocks: 1,
 
 		Logger:  c.Logger,
 		Cert:    c.Cert,

@@ -68,7 +68,7 @@ const (
 	baseLatency               = 500 * time.Millisecond
 	maxBaseLatency            = 10 * time.Second
 	proposalCollectionTimeout = 3 * time.Second
-	updatePeriod              = 1 * time.Millisecond
+	updatePeriod              = 20 * time.Millisecond
 	resendPeriod              = 10 * time.Second
 )
 
@@ -330,7 +330,7 @@ func NewChain(
 		bdlsId: selfID,
 		clock:  opts.Clock,
 
-		applyC:  make(chan apply),
+		applyC:  make(chan apply, opts.MaxInflightBlocks),
 		submitC: make(chan *submit),
 		haltC:   make(chan struct{}),
 		doneC:   make(chan struct{}),
@@ -619,7 +619,7 @@ func (c *Chain) ordered(msg *orderer.SubmitRequest) (batches [][]*common.Envelop
 	return batches, pending, nil
 }
 
-func (c *Chain) propose(ch chan *common.Block, bc *blockCreator, batches ...[]*common.Envelope) {
+func (c *Chain) propose(ch chan<- *common.Block, bc *blockCreator, batches ...[]*common.Envelope) {
 	c.Logger.Debugf("YYYY Inside propose() function and length of batches slice is: %v YYYY", len(batches))
 	for _, batch := range batches {
 		b := bc.createNextBlock(batch)
@@ -801,7 +801,7 @@ func (c *Chain) Start() {
 	close(c.errorC)
 
 	go c.run()
-	go c.TestMultiClient()
+	// go c.TestMultiClient()
 
 }
 
@@ -940,107 +940,36 @@ func (c *Chain) startConsensus(config *bdls.Config) error {
 	}
 
 	c.transportLayer = transportLayer
+	updateFuncTick := time.NewTicker(updatePeriod)
 
 	// we are calling update every 20ms
 	go func() {
 		for {
 			c.transportLayer.Update()
+			<-updateFuncTick.C
 		}
 	}()
 
+	// we are iterating every 20ms
 	for {
-
 		height, round, state := c.transportLayer.GetLatestState()
+
+		// nB := protoutil.UnmarshalBlockOrPanic(state)
+		// c.Logger.Debugf("YYYY Outside the check -> Height: %v and Block-Height: %+v YYYY", height, nB)
+
+		// This returned height and the state is not in sync and that's why it's causing the panic (height overflow)
 		if height > c.lastBlock.Header.Number {
 			// c.Logger.Debugf("TTTT New Current Height: %v TTTT", height)
-			// c.Logger.Infof("*** Inside the updateTick and putting data on applyC ***")
+			c.Logger.Infof("*** Inside the updateTick and putting data on applyC ***")
 			go func() {
+				// newBlock := protoutil.UnmarshalBlockOrPanic(state)
+				// c.Logger.Debugf("YYYY Putting data with height: %v and block-data-height: %v, YYYY", height, newBlock.Header.Number)
 				c.applyC <- apply{height: height, round: round, state: state}
+				// c.Logger.Debugf("Finished Putting height onto the channel: %v", height)
 			}()
 		}
 		<-updateTick.C
 	}
-
-	/*
-	   	// c.Order(env, 0)
-	   	var bc *blockCreator
-	   NEXTHEIGHT:
-	   	for {
-
-	   		env := &common.Envelope{
-	   			Payload: marshalOrPanic(&common.Payload{
-	   				Header: &common.Header{ChannelHeader: marshalOrPanic(&common.ChannelHeader{Type: int32(common.HeaderType_MESSAGE), ChannelId: c.Channel})},
-	   				Data:   []byte("TEST_MESSAGE-UNCC-2023-09-12---"),
-	   			}),
-	   		}
-	   		//req := &orderer.SubmitRequest{LastValidationSeq: 0, Payload: env, Channel: c.Channel}
-	   		//   batches, pending, err := c.ordered(req)
-	   		// if err != nil {
-	   		// 	c.Logger.Errorf("Failed to order message: %s", err)
-	   		// 	continue
-	   		// }
-	   		batches, pending := c.support.BlockCutter().Ordered(env)
-
-	   		if !pending && len(batches) == 0 {
-	   			c.Logger.Info("batches, pending ", batches, pending)
-	   			//continue
-	   		}
-
-	   		batch := c.support.BlockCutter().Cut()
-	   		if len(batch) == 0 {
-	   			c.Logger.Warningf("Batch timer expired with no pending requests, this might indicate a bug")
-	   			continue
-	   		}
-
-	   		bc = &blockCreator{
-	   			hash:   protoutil.BlockHeaderHash(c.lastBlock.Header),
-	   			number: c.lastBlock.Header.Number,
-	   			logger: c.Logger,
-	   		}
-	   		//batch = c.support.BlockCutter().Cut()
-	   		//for _, batch := range batches {
-	   		//block := c.support.CreateNextBlock(batch)
-
-	   		block := bc.createNextBlock(batch)
-
-	   		data, err := proto.Marshal(block)
-	   		if err != nil {
-	   			c.Logger.Info("*** cannot Marshal Block ", err)
-	   		}
-	   		//transportLayer.Propose(data)
-	   		c.transportLayer.Propose(data)
-	   		//} //batches for-loop end
-	   		for {
-	   			newHeight, _, newState := transportLayer.GetLatestState() //newRound
-	   			if newHeight > c.lastBlock.Header.Number {
-	   				//h := blake2b.Sum256(data)
-
-	   				newBlock, err := protoutil.UnmarshalBlock(newState)
-	   				if err != nil {
-	   					return errors.Errorf("failed to unmarshal bdls State to block: %s", err)
-	   				}
-
-	   				c.Logger.Infof("Unmarshal bdls State to \r\n block: %v \r\n Header.Number: %v ", newBlock.Data, newBlock.Header.Number)
-
-	   				c.Logger.Info("lastBlock number before write decide block: ", c.lastBlock.Header.Number, c.lastBlock.Header.PreviousHash)
-
-	   				// c.Logger.Infof("<decide> at height:%v round:%v hash:%v", newHeight, newRound, hex.EncodeToString(h[:]))
-
-	   				c.lastBlock = newBlock
-	   				// TODO use the bdls <decide> info for the new block
-
-	   				// Using the newState type of bdls.State. it represented the proposed blocked that achived consensus
-	   				//c.writeBlock(newBlock, 0)
-	   				c.support.WriteBlock(newBlock, nil)
-
-	   				continue NEXTHEIGHT
-	   			}
-	   			// wait
-	   			<-time.After(20 * time.Millisecond)
-	   		}
-	   		//}
-	   	}*/
-	// return nil
 }
 
 func marshalOrPanic(pb proto.Message) []byte {
@@ -1052,17 +981,20 @@ func marshalOrPanic(pb proto.Message) []byte {
 }
 
 func (c *Chain) apply(height uint64, round uint64, data bdls.State) {
-	// c.applyC <- apply{state: data}
-	//if app.state != nil {
 	c.Logger.Infof("**** Inside apply function *****")
 	newBlock, err := protoutil.UnmarshalBlock(data)
 	if err != nil {
 		c.Logger.Errorf("failed to unmarshal bdls State to block: %s", err)
 	}
 
+	if newBlock.Header.Number != height {
+		c.Logger.Debugf("YYYY The height passed: %v and the unmarsheled block-data has height: %v \nThey don't match. YYYY", height, newBlock.Header.Number)
+	}
+
 	// c.Logger.Infof("Unmarshal bdls State to \r\n block data: %v ", newBlock.Data)
 
 	c.Logger.Infof("lastBlock number before write decide block Number : %v ", c.lastBlock.Header.Number)
+	c.Logger.Debugf("The block to be put to be written has height: %v and the passed height value: %v", newBlock.Header.Number, height)
 
 	// c.Logger.Infof("<decide> at height:%v round:%v hash:%v", newHeight, newRound, hex.EncodeToString(h[:]))
 
@@ -1080,10 +1012,9 @@ func (c *Chain) apply(height uint64, round uint64, data bdls.State) {
 
 func (c *Chain) run() {
 
-	// timer := time.NewTimer(1 * time.Second)
+	timer := time.NewTimer(time.Second)
 	ticking := false
 	// timer := c.clock.NewTimer(time.Second)
-	timer := time.NewTimer(time.Second)
 
 	// we need a stopped timer rather than nil,
 	// because we will be select waiting on timer.C()
@@ -1095,57 +1026,90 @@ func (c *Chain) run() {
 	startTimer := func() {
 		if !ticking {
 			ticking = true
+			c.Logger.Debug("YYYY Starting the Timer YYYY")
 			timer.Reset(c.support.SharedConfig().BatchTimeout())
+			// timer.Reset(time.Second) // resetting
 		}
 	}
 
 	stopTimer := func() {
 		if !timer.Stop() && ticking {
 			// we only need to drain the channel if the timer expired (not explicitly stopped)
-			<-timer.C
+			select {
+			case t := <-timer.C:
+				c.Logger.Debugf("YYYY Stopped the Timer and draining the channel: %v YYYY", t)
+			default:
+				// The channel is empty, do nothing
+				c.Logger.Debug("YYYY The timer is empty as it has been stopped before it expired YYYY")
+			}
 		}
+		c.Logger.Debugf("YYYY Timer may already be stopped with ticking: %v YYYY", ticking)
 		ticking = false
 	}
+
 	//TODO replace the:
 	// defer updateTick.Stop()
+	bc := &blockCreator{
+		hash:   protoutil.BlockHeaderHash(c.lastBlock.Header),
+		number: c.lastBlock.Header.Number,
+		logger: c.Logger,
+	}
 
 	submitC := c.submitC
-	//var propC chan<- *common.Block
+	var propC chan<- *common.Block
 
-	var bc *blockCreator
 	c.Logger.Infof("Start accepting requests  at block [%d]", c.lastBlock.Header.Number)
 	// TODO in Propose()
-	
-	propC := make(chan *common.Block) // 5 in-flight blocks in consenter.go
 
-	go func(ch chan *common.Block) {
-		for {
-			b := <-ch
-			c.Logger.Debug("YYYY INSIDE THE GOROUTINE - got a block for proposing YYYY")
-			// batch := c.support.BlockCutter().Cut()
-			// if len(batch) == 0 {
-			// 	c.Logger.Warningf("Batch timer expired with no pending requests, this might indicate a bug")
-			// 	continue
-			// }
+	// propC := make(chan *common.Block, c.opts.MaxInflightBlocks) // 5 in-flight blocks in consenter.go
 
-			// block := bc.createNextBlock(batch)
+	propC = (func() chan<- *common.Block {
+		c.blockInflight = 0
+		ch := make(chan *common.Block, c.opts.MaxInflightBlocks)
 
-			data, err := proto.Marshal(b)
-			if err != nil {
-				c.Logger.Info("*** INSIDE GOROUTINE cannot Marshal Block ", err)
+		go func(ch <-chan *common.Block) {
+			for {
+				b := <-ch
+				c.Logger.Debug("YYYY INSIDE THE GOROUTINE - got a block for proposing YYYY")
+				data, err := proto.Marshal(b)
+				if err != nil {
+					c.Logger.Info("*** INSIDE GOROUTINE cannot Marshal Block ", err)
+				}
+				c.transportLayer.Propose(data)
+				c.Logger.Debugf("INSIDE GOROUTINE Proposed block [%d] to bdls consensus", b.Header.Number)
 			}
+		}(ch)
+		return ch
+	})()
 
-			// newBlock, err := protoutil.UnmarshalBlock(data)
-			// if err != nil {
-			// 	c.Logger.Errorf("INSIDE GOROUTINE failed to unmarshal bdls State to block: %s", err)
-			// }
+	// go func() {
+	// 	for {
+	// 		b := <-propC
+	// 		c.Logger.Debug("YYYY INSIDE THE GOROUTINE - got a block for proposing YYYY")
+	// 		// batch := c.support.BlockCutter().Cut()
+	// 		// if len(batch) == 0 {
+	// 		// 	c.Logger.Warningf("Batch timer expired with no pending requests, this might indicate a bug")
+	// 		// 	continue
+	// 		// }
 
-			// c.Logger.Infof("INSIDE GOROUTINE Unmarshal bdls State to \r\n block data: %v ", newBlock.Data)
+	// 		// block := bc.createNextBlock(batch)
 
-			c.transportLayer.Propose(data)
-			c.Logger.Debugf("INSIDE GOROUTINE Proposed block [%d] to bdls consensus", b.Header.Number)
-		}
-	}(propC)
+	// 		data, err := proto.Marshal(b)
+	// 		if err != nil {
+	// 			c.Logger.Info("*** INSIDE GOROUTINE cannot Marshal Block ", err)
+	// 		}
+
+	// 		// newBlock, err := protoutil.UnmarshalBlock(data)
+	// 		// if err != nil {
+	// 		// 	c.Logger.Errorf("INSIDE GOROUTINE failed to unmarshal bdls State to block: %s", err)
+	// 		// }
+
+	// 		// c.Logger.Infof("INSIDE GOROUTINE Unmarshal bdls State to \r\n block data: %v ", newBlock.Data)
+
+	// 		c.transportLayer.Propose(data)
+	// 		c.Logger.Debugf("INSIDE GOROUTINE Proposed block [%d] to bdls consensus", b.Header.Number)
+	// 	}
+	// }()
 
 	// go func() {
 	// 	for {
@@ -1161,18 +1125,16 @@ func (c *Chain) run() {
 	// 	}
 	// }()
 
+	// calling c.applyC case in a separate go routine
+	// go func() {
+	// 	for {
+	// 		app := <-c.applyC
+
+	// 	}
+	// }()
+
 	for {
 		select {
-		// case <-updateTick.C:
-		// 	c.transportLayer.Update()
-		// 	height, round, state := c.transportLayer.GetLatestState()
-		// 	if height > c.lastBlock.Header.Number {
-		// 		c.Logger.Infof("*** Inside the updateTick and putting data on applyC ***")
-		// 		go func() {
-		// 			c.applyC <- apply{height: height, round: round, state: state}
-		// 		}()
-		// 	}
-
 		case <-timer.C:
 			ticking = false
 
@@ -1184,33 +1146,9 @@ func (c *Chain) run() {
 			}
 			c.Logger.Debugf("Batch timer expired, creating block")
 			c.Logger.Infof("TTTT Proposing the batch through timer.C TTTT")
+			c.Logger.Debugf("YYYY The size of propC channel is: %v YYYY", len(propC))
 			c.propose(propC, bc, batch)
 
-		// case <-updateTick.C:
-
-		// 	//TO Be Use for calling the consensus Update() function
-		// 	c.transportLayer.Update()
-		// 	//c.Logger.Infof("In <-updateTick.C")
-		// 	// check if new block confirmed
-		// 	height, round, state := c.transportLayer.GetLatestState()
-		// 	if height > c.lastBlock.Header.Number {
-
-		// 		/*newBlock, err := protoutil.UnmarshalBlock(state)
-		// 		if err != nil {
-		// 			c.Logger.Errorf("failed to unmarshal bdls State to block: %s", err)
-		// 		}
-		// 		c.lastBlock = newBlock
-		// 		c.support.WriteBlock(newBlock, nil)
-
-		// 		c.Logger.Infof("****X**newBlock Number ", newBlock.Header.Number)*/
-
-		// 		go c.apply(height, round, state)
-
-		// 		//c.applyC <- apply{state}
-		// 		//return
-		// 	}
-
-		// EOL  the consensus updater ticker
 		case <-c.chConsensusMessages:
 			c.Logger.Infof("**** Getting consensus message *****")
 			c.Lock()
@@ -1221,8 +1159,8 @@ func (c *Chain) run() {
 				c.consensus.ReceiveMessage(msg, time.Now())
 			}
 			c.Unlock()
+
 		case s := <-submitC:
-			// countOrder ++
 			c.Logger.Debugf("TTTT Inside the submitC case TTTT")
 
 			if s == nil {
@@ -1230,63 +1168,30 @@ func (c *Chain) run() {
 				continue
 			}
 
-			bc = &blockCreator{
-				hash:   protoutil.BlockHeaderHash(c.lastBlock.Header),
-				number: c.lastBlock.Header.Number,
-				logger: c.Logger,
-			}
-
 			// batches, pending := c.support.BlockCutter().Ordered(s.req.Payload)
 			batches, pending := c.support.BlockCutter().Ordered(s.req.Payload)
-			// batches, pending, err := c.ordered(s.req)
-			// if err != nil {
-			// 	c.Logger.Errorf("Failed to order message: %s", err)
-			// 	continue
-			// }
 
 			c.Logger.Infof("**** Is Pending Messages: %v ****", pending)
 
 			if !pending && len(batches) == 0 {
-				// c.Logger.Info("batches, pending ", batches, pending)
+				c.Logger.Info("length of batches, pending ", len(batches), pending)
 				c.Logger.Debug("TTTT Continuing the next iteration TTTT")
 				continue
 			}
 
 			if pending {
+				c.Logger.Debug("YYYY Starting the timer YYYY")
 				startTimer() // no-op if timer is already started
 			} else {
+				c.Logger.Debug("YYYY Stopping the timer YYYY")
 				stopTimer()
 			}
 
-			// c.Logger.Infof(" ====== Value of countOrder ======: %v", countOrder)
-			// if countOrder == 400 {
-			// 	batch := c.support.BlockCutter().Cut()
-			// 	c.propose(propC, bc, batch)
-			// }
-
 			c.Logger.Infof("SSSS Proposing the batches through SubmitC with length of batches: %v SSSS", len(batches))
-
 			c.propose(propC, bc, batches...)
 
 			c.Logger.Infof("SSSS called c.propose function inside submitC SSSS")
 
-			// batch := c.support.BlockCutter().Cut()
-			// if len(batch) == 0 {
-			// 	c.Logger.Warningf("Batch timer expired with no pending requests, this might indicate a bug")
-			// 	continue
-			// }
-
-			// block := bc.createNextBlock(batch)
-			// data, err := proto.Marshal(block)
-			// if err != nil {
-			// 	c.Logger.Info("*** cannot Marshal Block ", err)
-			// }
-			// c.transportLayer.Propose(data)
-
-			// if c.configInflight {
-			// 	c.logger.Info("Received config transaction, pause accepting transaction till it is committed")
-			// 	// submitC = nil
-			// } else
 			if c.blockInflight >= c.opts.MaxInflightBlocks {
 				c.Logger.Debugf("Number of in-flight blocks (%d) reaches limit (%d), pause accepting transaction",
 					c.blockInflight, c.opts.MaxInflightBlocks)
@@ -1295,15 +1200,18 @@ func (c *Chain) run() {
 
 		case app := <-c.applyC:
 			c.Logger.Infof("**** Inside applyC case ****")
+			c.Logger.Debugf("YYYY The value of submitC: %v YYYY", submitC)
+			c.Logger.Debugf("YYYY The value of height inside the applyC case: %v YYYY", app.height)
+
 			c.apply(app.height, app.round, app.state)
 			if c.blockInflight < c.opts.MaxInflightBlocks {
 				submitC = c.submitC
 			}
-
 		case <-c.die:
 			return
 
 		case <-c.doneC:
+			c.Logger.Debug("YYYY Inside the doneC case and stopping the TimerYYYY")
 			stopTimer()
 			//cancelProp()
 			// updateTick.Stop()

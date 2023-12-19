@@ -379,7 +379,7 @@ func (c *Chain) Start() {
 	go c.gc()
 	go c.run()
 
-	go c.TestMultiClient()
+	// go c.TestMultiClient()
 
 	es := c.newEvictionSuspector()
 
@@ -627,6 +627,7 @@ func (c *Chain) run() {
 	startTimer := func() {
 		if !ticking {
 			ticking = true
+			c.logger.Debug("YYYY Starting the Timer YYYY")
 			timer.Reset(c.support.SharedConfig().BatchTimeout())
 		}
 	}
@@ -634,7 +635,8 @@ func (c *Chain) run() {
 	stopTimer := func() {
 		if !timer.Stop() && ticking {
 			// we only need to drain the channel if the timer expired (not explicitly stopped)
-			<-timer.C()
+			t := <-timer.C()
+			c.logger.Debugf("YYYY Stopped the Timer and draining the channel: %v YYYY", t)
 		}
 		ticking = false
 	}
@@ -730,15 +732,22 @@ func (c *Chain) run() {
 				continue
 			}
 
+			c.logger.Infof("**** Is Pending Messages: %v ****", pending)
+
 			if !pending && len(batches) == 0 {
+				c.logger.Info("length of batches, pending ", len(batches), pending)
+				c.logger.Debug("TTTT Continuing the next iteration TTTT")
 				continue
 			}
 
 			if pending {
+				c.logger.Debug("YYYY Starting the timer YYYY")
 				startTimer() // no-op if timer is already started
 			} else {
+				c.logger.Debug("YYYY Stopping the timer YYYY")
 				stopTimer()
 			}
+
 			c.logger.Infof("SSSS Proposing the batches through SubmitC with length of batches: %v SSSS", len(batches))
 
 			c.logger.Debugf("TTTT Before proposing the batches from submitC TTTT")
@@ -755,6 +764,8 @@ func (c *Chain) run() {
 			}
 
 		case app := <-c.applyC:
+			c.logger.Debug("YYYY Inside the applyC case YYYY")
+			c.logger.Debugf("YYYY The value of submitC: %v YYYY", submitC)
 			if app.soft != nil {
 				newLeader := atomic.LoadUint64(&app.soft.Lead) // etcdraft requires atomic access
 				if newLeader != soft.Lead {
@@ -1184,6 +1195,7 @@ func (c *Chain) apply(ents []raftpb.Entry) {
 			}
 
 			block := protoutil.UnmarshalBlockOrPanic(ents[i].Data)
+			c.logger.Debug("YYYY Writing the block from inside the apply function YYYY")
 			c.writeBlock(block, ents[i].Index)
 			c.Metrics.CommittedBlockNumber.Set(float64(block.Header.Number))
 

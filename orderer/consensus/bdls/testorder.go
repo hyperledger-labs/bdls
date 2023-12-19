@@ -33,7 +33,7 @@ func (c *Chain) TestMultiClient() {
 func (c *Chain) TestOrderClient1(wg *sync.WaitGroup) {
 	// time.Sleep(10000 * time.Millisecond)
 	c.Logger.Infof("For client %v", 1)
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 100000; i++ {
 		env := &common.Envelope{
 			Payload: marshalOrPanic(&common.Payload{
 				Header: &common.Header{ChannelHeader: marshalOrPanic(&common.ChannelHeader{Type: int32(common.HeaderType_MESSAGE), ChannelId: c.Channel})},
@@ -52,7 +52,7 @@ func (c *Chain) TestOrderClient1(wg *sync.WaitGroup) {
 func (c *Chain) TestOrderClient2(wg *sync.WaitGroup) {
 	// time.Sleep(20000 * time.Millisecond)
 	c.Logger.Infof("For client %v", 2)
-	for i := 0; i < 2500; i++ {
+	for i := 0; i < 10000; i++ {
 		env := &common.Envelope{
 			Payload: marshalOrPanic(&common.Payload{
 				Header: &common.Header{ChannelHeader: marshalOrPanic(&common.ChannelHeader{Type: int32(common.HeaderType_MESSAGE), ChannelId: c.Channel})},
