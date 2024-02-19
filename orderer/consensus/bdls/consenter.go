@@ -151,7 +151,7 @@ func New(
 
 	//var walConfig WALConfig
 
-	logger.Infof("Starting NEW bdls.....U-N-C-C****/////.......")
+	logger.Infof("Starting NEW bdls.....UNCC...PhD.research....")
 	consenter := &Consenter{
 		Registrar:        r,
 		GetPolicyManager: pmr,

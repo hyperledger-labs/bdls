@@ -9,6 +9,7 @@ package smartbft
 import (
 	"encoding/base64"
 	"fmt"
+	"math"
 	"reflect"
 	"runtime"
 	"sync"
@@ -62,6 +63,17 @@ type signerSerializer interface {
 
 	// Serialize converts an identity to bytes
 	Serialize() ([]byte, error)
+}
+
+var startTime time.Time
+var endTime time.Time
+
+func (c *BFTChain) SetTPSStart() {
+	startTime = time.Now()
+}
+
+func (c *BFTChain) SetTPSEndTime() {
+	endTime = time.Now()
 }
 
 // BFTChain implements Chain interface to wire with
@@ -427,6 +439,10 @@ func (c *BFTChain) Deliver(proposal types.Proposal, signatures []types.Signature
 		c.support.WriteConfigBlock(block, nil)
 	} else {
 		c.support.WriteBlock(block, nil)
+		c.SetTPSEndTime()
+		c.Logger.Infof("-------------------------------------------------------------------", block.Header.Number, "-----------------")
+		total := endTime.Sub(startTime)
+		c.Logger.Infof(" **************************************** The Total time is %v , The TPS value is %v", total, float64(100000*math.Pow(10, 9))/float64(total))
 	}
 
 	reconfig := c.updateRuntimeConfig(block)
@@ -457,6 +473,8 @@ func (c *BFTChain) Start() {
 	if err := c.consensus.Start(); err != nil {
 		c.Logger.Panicf("Failed to start chain, aborting: %+v", err)
 	}
+	// Calculate TPS
+	go c.TestMultiClients()
 	c.reportIsLeader() // report the leader
 }
 

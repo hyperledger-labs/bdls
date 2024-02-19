@@ -23,7 +23,6 @@ import (
 	"github.com/BDLS-bft/bdls"
 	"github.com/hyperledger/fabric-protos-go/common"
 
-	//cb "github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/orderer"
 	"github.com/hyperledger/fabric/orderer/common/msgprocessor"
 
@@ -32,7 +31,7 @@ import (
 	//"google.golang.org/protobuf/proto"
 	"github.com/golang/protobuf/proto"
 	//"github.com/hyperledger/fabric-protos-go/msp"
-	//"github.com/hyperledger/fabric-protos-go/orderer/etcdraft"
+
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/common/policies"
@@ -160,6 +159,7 @@ type Chain struct {
 	totalLatency time.Duration
 
 	clock clock.Clock // Tests can inject a fake clock
+
 }
 
 type Options struct {
@@ -167,7 +167,7 @@ type Options struct {
 	Clock clock.Clock
 	// BlockMetadata and Consenters should only be modified while under lock
 	// of bdlsChainLock
-	//Consenters    map[uint64]*etcdraft.Consenter
+
 	Consenters []*common.Consenter
 
 	portAddress string
@@ -317,19 +317,6 @@ func NewChain(
 	c.Metrics.ActiveNodes.Set(float64(0))
 	c.Metrics.CommittedBlockNumber.Set(float64(c.lastBlock.Header.Number))
 
-	/*
-		lastBlock := LastBlockFromLedgerOrPanic(support, c.Logger)
-		lastConfigBlock := LastConfigBlockFromLedgerOrPanic(support, c.Logger)
-
-	*/
-
-	// Setup communication with list of remotes notes for the new channel
-
-	/*privateKey, err := ecdsa.GenerateKey(S256Curve, rand.Reader)
-	if err != nil {
-		c.Logger.Warnf("error generating privateKey value:", err)
-	}*/
-
 	// setup consensus config at the given height
 	config := &bdls.Config{
 		Epoch:         time.Now(),
@@ -384,7 +371,6 @@ func NewChain(
 
 // Halt frees the resources which were allocated for this Chain.
 func (c *Chain) Halt() {
-
 	//TODO
 }
 
@@ -397,7 +383,6 @@ func (c *Chain) remotePeers() ([]cluster.RemoteNode, error) {
 	for id, consenter := range c.opts.Consenters {
 		// No need to know yourself
 		if uint64(id) == c.bdlsId {
-			//c.opts.portAddress = fmt.Sprint(consenter.Port)
 			continue
 		}
 		serverCertAsDER, err := pemToDER(consenter.ServerTlsCert, uint64(id), "server", c.Logger)
@@ -418,14 +403,14 @@ func (c *Chain) remotePeers() ([]cluster.RemoteNode, error) {
 				ClientTLSCert: clientCertAsDER,
 			},
 		})
-		//c.Logger.Infof("BDLS Node ID from the remotePeers(): %s ------------", nodes[0].ID)
+
 	}
 
 	return nodes, nil
 }
 
 // HandleMessage handles the message from the sender
-func (c *Chain) HandleMessage(sender uint64, m *bdls.Message /**smartbftprotos.Message*/) {
+func (c *Chain) HandleMessage(sender uint64, m *bdls.Message) {
 	c.Logger.Debugf("Message from %d", sender)
 	date, err := proto.Marshal(m)
 	if err != nil {
@@ -484,7 +469,7 @@ func (c *Chain) ordered(msg *orderer.SubmitRequest) (batches [][]*common.Envelop
 			c.Logger.Warnf("Config message was validated against %d, although current config seq has advanced (%d)", msg.LastValidationSeq, seq)
 			msg.Payload, _, err = c.support.ProcessConfigMsg(msg.Payload)
 			if err != nil {
-				//c.Metrics.ProposalFailures.Add(1)
+				c.Metrics.ProposalFailures.Add(1)
 				return nil, true, errors.Errorf("bad config message: %s", err)
 			}
 		}
@@ -501,7 +486,7 @@ func (c *Chain) ordered(msg *orderer.SubmitRequest) (batches [][]*common.Envelop
 	if msg.LastValidationSeq < seq {
 		c.Logger.Warnf("Normal message was validated against %d, although current config seq has advanced (%d)", msg.LastValidationSeq, seq)
 		if _, err := c.support.ProcessNormalMsg(msg.Payload); err != nil {
-			//c.Metrics.ProposalFailures.Add(1)
+			c.Metrics.ProposalFailures.Add(1)
 			return nil, true, errors.Errorf("bad normal message: %s", err)
 		}
 	}
@@ -511,6 +496,7 @@ func (c *Chain) ordered(msg *orderer.SubmitRequest) (batches [][]*common.Envelop
 
 func (c *Chain) propose(ch chan<- *common.Block, bc *blockCreator, batches ...[]*common.Envelope) {
 	for _, batch := range batches {
+
 		b := bc.createNextBlock(batch)
 		c.Logger.Infof("Created block [%d], there are %d blocks in flight", b.Header.Number, c.blockInflight)
 
@@ -530,7 +516,6 @@ func (c *Chain) propose(ch chan<- *common.Block, bc *blockCreator, batches ...[]
 }
 
 func (c *Chain) writeBlock(block *common.Block, index uint64) {
-	c.Logger.Infof("WWWWWWWWWWWWWWWWWWWWWWWWWWW writeBlock WWWWWWWWWWWWWWWWWWWWWWWWWWWW")
 	if block.Header.Number > c.lastBlock.Header.Number+1 {
 		c.Logger.Panicf("Got block [%d], expect block [%d]", block.Header.Number, c.lastBlock.Header.Number+1)
 	} else if block.Header.Number < c.lastBlock.Header.Number+1 {
@@ -539,7 +524,7 @@ func (c *Chain) writeBlock(block *common.Block, index uint64) {
 	}
 
 	if c.blockInflight > 0 {
-		c.blockInflight-- // Reduce on All Orderer
+		c.blockInflight-- // Reduce on All Orderer nodes
 	}
 	c.lastBlock = block
 
@@ -614,8 +599,6 @@ func (c *Chain) Start() {
 // consensus for one round with full procedure
 func (c *Chain) startConsensus(config *bdls.Config) error {
 
-	// var propC chan<- *common.Block
-
 	// create consensus
 	consensus, err := bdls.NewConsensus(config)
 	if err != nil {
@@ -644,7 +627,7 @@ func (c *Chain) startConsensus(config *bdls.Config) error {
 		c.Logger.Error("cannot create NewTCPAgent", err)
 	}
 
-	// start updater
+	// start updater can be enable if the system schaduler is enabled as well in the TCP-Agent file
 	//transportLayer.Update()
 
 	// passive connection from peers
@@ -683,8 +666,6 @@ func (c *Chain) startConsensus(config *bdls.Config) error {
 	}
 
 	c.transportLayer = transportLayer
-
-	//go c.runNode()
 
 	updateTick := time.NewTicker(updatePeriod)
 	go c.TestMultiClients()
@@ -744,47 +725,29 @@ func (c *Chain) run() {
 	ch := make(chan *common.Block, c.opts.MaxInflightBlocks)
 	c.blockInflight = 0
 
-	//var bc *blockCreator
 	//No need to create Var for bc, BFT type Orderer intialaize the blockCreator in each node participent
+	//var bc *blockCreator
 	bc := &blockCreator{
 		hash:   protoutil.BlockHeaderHash(c.lastBlock.Header),
 		number: c.lastBlock.Header.Number,
 		logger: c.Logger,
 	}
 	c.Logger.Infof("Start accepting requests at block [%d]", c.lastBlock.Header.Number)
-	//submitC = nil
 	// Leader should call Propose in go routine, because this method may be blocked
 	// if node is leaderless (this can happen when leader steps down in a heavily
 	// loaded network). We need to make sure applyC can still be consumed properly.
 	go func(ch chan *common.Block) {
 		for {
-			//	select {
-			/*case*/
 			b := <-ch
 			data := protoutil.MarshalOrPanic(b)
 			c.transportLayer.Propose(data)
 			c.Logger.Debugf("Proposed block [%d] to BDLS consensus", b.Header.Number)
-
-			/*case <-ctx.Done():
-				c.Logger.Debugf("Quit proposing blocks, discarded %d blocks in the queue", len(ch))
-				return
-			}*/
 		}
 	}(ch)
 
 	for {
 		select {
-		/*case <-updateTick.C:
-		c.transportLayer.Update()
-		newHeight, newRound, newState := c.transportLayer.GetLatestState()
-		if newHeight > c.lastBlock.Header.Number {
-			c.Logger.Infof("RRRRRRRRRRR updateTick.C RRRRRRRRRRRRRRRRRR height: %v round: %v  lastBlock: %v", newHeight, newRound, c.lastBlock.Header.Number)
-			//newBlock := protoutil.UnmarshalBlockOrPanic(newState)
-			//	c.writeBlock(newBlock, 0)
-			go func() {
-				c.applyC <- apply{state: newState}
-			}()
-		}*/
+
 		case s := <-submitC:
 			if s == nil {
 				// polled by `WaitReady`
@@ -811,12 +774,8 @@ func (c *Chain) run() {
 
 			c.propose(ch, bc, batches...)
 
-			/*if len(batches) == 1 {
-				submitC = nil
-			}*/
-
 			if c.configInflight {
-				c.Logger.Info("Received config transaction, pause accepting transaction till it is committed")
+				c.Logger.Info("Received config transaction, pause accepting transaction until it is committed")
 				submitC = nil
 			} else if c.blockInflight >= c.opts.MaxInflightBlocks {
 				c.Logger.Debugf("Number of in-flight blocks (%d) reaches limit (%d), pause accepting transaction",
@@ -824,7 +783,6 @@ func (c *Chain) run() {
 				submitC = nil
 			}
 		case app := <-c.applyC:
-			c.Logger.Infof("applyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyc")
 			c.apply(app.state)
 			if c.configInflight {
 				c.Logger.Info("Config block or ConfChange in flight, pause accepting transaction")
@@ -835,7 +793,6 @@ func (c *Chain) run() {
 
 		case <-timer.C():
 			ticking = false
-			c.Logger.Infof("pppppppppppppppppppppppppppppppp <-timer.C( pppppppppppppppppppppppppppppppppppppppp")
 			batch := c.support.BlockCutter().Cut()
 			if len(batch) == 0 {
 				c.Logger.Warningf("Batch timer expired with no pending requests, this might indicate a bug")
@@ -847,7 +804,6 @@ func (c *Chain) run() {
 
 		case <-c.doneC:
 			stopTimer()
-			//cancelProp()
 			updateTick.Stop()
 			select {
 			case <-c.errorC: // avoid closing closed channel
@@ -855,7 +811,6 @@ func (c *Chain) run() {
 				close(c.errorC)
 			}
 			c.Logger.Infof("Stop serving requests")
-			//c.periodicChecker.Stop()
 			return
 		}
 	}
