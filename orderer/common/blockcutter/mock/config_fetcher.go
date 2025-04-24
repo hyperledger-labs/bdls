@@ -10,9 +10,8 @@ import (
 type OrdererConfigFetcher struct {
 	OrdererConfigStub        func() (channelconfig.Orderer, bool)
 	ordererConfigMutex       sync.RWMutex
-	ordererConfigArgsForCall []struct {
-	}
-	ordererConfigReturns struct {
+	ordererConfigArgsForCall []struct{}
+	ordererConfigReturns     struct {
 		result1 channelconfig.Orderer
 		result2 bool
 	}
@@ -27,8 +26,7 @@ type OrdererConfigFetcher struct {
 func (fake *OrdererConfigFetcher) OrdererConfig() (channelconfig.Orderer, bool) {
 	fake.ordererConfigMutex.Lock()
 	ret, specificReturn := fake.ordererConfigReturnsOnCall[len(fake.ordererConfigArgsForCall)]
-	fake.ordererConfigArgsForCall = append(fake.ordererConfigArgsForCall, struct {
-	}{})
+	fake.ordererConfigArgsForCall = append(fake.ordererConfigArgsForCall, struct{}{})
 	fake.recordInvocation("OrdererConfig", []interface{}{})
 	fake.ordererConfigMutex.Unlock()
 	if fake.OrdererConfigStub != nil {

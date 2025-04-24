@@ -13,9 +13,8 @@ import (
 type Resources struct {
 	ApplicationConfigStub        func() (channelconfig.Application, bool)
 	applicationConfigMutex       sync.RWMutex
-	applicationConfigArgsForCall []struct {
-	}
-	applicationConfigReturns struct {
+	applicationConfigArgsForCall []struct{}
+	applicationConfigReturns     struct {
 		result1 channelconfig.Application
 		result2 bool
 	}
@@ -25,9 +24,8 @@ type Resources struct {
 	}
 	ChannelConfigStub        func() channelconfig.Channel
 	channelConfigMutex       sync.RWMutex
-	channelConfigArgsForCall []struct {
-	}
-	channelConfigReturns struct {
+	channelConfigArgsForCall []struct{}
+	channelConfigReturns     struct {
 		result1 channelconfig.Channel
 	}
 	channelConfigReturnsOnCall map[int]struct {
@@ -35,9 +33,8 @@ type Resources struct {
 	}
 	ConfigtxValidatorStub        func() configtx.Validator
 	configtxValidatorMutex       sync.RWMutex
-	configtxValidatorArgsForCall []struct {
-	}
-	configtxValidatorReturns struct {
+	configtxValidatorArgsForCall []struct{}
+	configtxValidatorReturns     struct {
 		result1 configtx.Validator
 	}
 	configtxValidatorReturnsOnCall map[int]struct {
@@ -45,9 +42,8 @@ type Resources struct {
 	}
 	ConsortiumsConfigStub        func() (channelconfig.Consortiums, bool)
 	consortiumsConfigMutex       sync.RWMutex
-	consortiumsConfigArgsForCall []struct {
-	}
-	consortiumsConfigReturns struct {
+	consortiumsConfigArgsForCall []struct{}
+	consortiumsConfigReturns     struct {
 		result1 channelconfig.Consortiums
 		result2 bool
 	}
@@ -57,9 +53,8 @@ type Resources struct {
 	}
 	MSPManagerStub        func() msp.MSPManager
 	mSPManagerMutex       sync.RWMutex
-	mSPManagerArgsForCall []struct {
-	}
-	mSPManagerReturns struct {
+	mSPManagerArgsForCall []struct{}
+	mSPManagerReturns     struct {
 		result1 msp.MSPManager
 	}
 	mSPManagerReturnsOnCall map[int]struct {
@@ -67,9 +62,8 @@ type Resources struct {
 	}
 	OrdererConfigStub        func() (channelconfig.Orderer, bool)
 	ordererConfigMutex       sync.RWMutex
-	ordererConfigArgsForCall []struct {
-	}
-	ordererConfigReturns struct {
+	ordererConfigArgsForCall []struct{}
+	ordererConfigReturns     struct {
 		result1 channelconfig.Orderer
 		result2 bool
 	}
@@ -79,9 +73,8 @@ type Resources struct {
 	}
 	PolicyManagerStub        func() policies.Manager
 	policyManagerMutex       sync.RWMutex
-	policyManagerArgsForCall []struct {
-	}
-	policyManagerReturns struct {
+	policyManagerArgsForCall []struct{}
+	policyManagerReturns     struct {
 		result1 policies.Manager
 	}
 	policyManagerReturnsOnCall map[int]struct {
@@ -105,8 +98,7 @@ type Resources struct {
 func (fake *Resources) ApplicationConfig() (channelconfig.Application, bool) {
 	fake.applicationConfigMutex.Lock()
 	ret, specificReturn := fake.applicationConfigReturnsOnCall[len(fake.applicationConfigArgsForCall)]
-	fake.applicationConfigArgsForCall = append(fake.applicationConfigArgsForCall, struct {
-	}{})
+	fake.applicationConfigArgsForCall = append(fake.applicationConfigArgsForCall, struct{}{})
 	fake.recordInvocation("ApplicationConfig", []interface{}{})
 	fake.applicationConfigMutex.Unlock()
 	if fake.ApplicationConfigStub != nil {
@@ -160,8 +152,7 @@ func (fake *Resources) ApplicationConfigReturnsOnCall(i int, result1 channelconf
 func (fake *Resources) ChannelConfig() channelconfig.Channel {
 	fake.channelConfigMutex.Lock()
 	ret, specificReturn := fake.channelConfigReturnsOnCall[len(fake.channelConfigArgsForCall)]
-	fake.channelConfigArgsForCall = append(fake.channelConfigArgsForCall, struct {
-	}{})
+	fake.channelConfigArgsForCall = append(fake.channelConfigArgsForCall, struct{}{})
 	fake.recordInvocation("ChannelConfig", []interface{}{})
 	fake.channelConfigMutex.Unlock()
 	if fake.ChannelConfigStub != nil {
@@ -212,8 +203,7 @@ func (fake *Resources) ChannelConfigReturnsOnCall(i int, result1 channelconfig.C
 func (fake *Resources) ConfigtxValidator() configtx.Validator {
 	fake.configtxValidatorMutex.Lock()
 	ret, specificReturn := fake.configtxValidatorReturnsOnCall[len(fake.configtxValidatorArgsForCall)]
-	fake.configtxValidatorArgsForCall = append(fake.configtxValidatorArgsForCall, struct {
-	}{})
+	fake.configtxValidatorArgsForCall = append(fake.configtxValidatorArgsForCall, struct{}{})
 	fake.recordInvocation("ConfigtxValidator", []interface{}{})
 	fake.configtxValidatorMutex.Unlock()
 	if fake.ConfigtxValidatorStub != nil {
@@ -264,8 +254,7 @@ func (fake *Resources) ConfigtxValidatorReturnsOnCall(i int, result1 configtx.Va
 func (fake *Resources) ConsortiumsConfig() (channelconfig.Consortiums, bool) {
 	fake.consortiumsConfigMutex.Lock()
 	ret, specificReturn := fake.consortiumsConfigReturnsOnCall[len(fake.consortiumsConfigArgsForCall)]
-	fake.consortiumsConfigArgsForCall = append(fake.consortiumsConfigArgsForCall, struct {
-	}{})
+	fake.consortiumsConfigArgsForCall = append(fake.consortiumsConfigArgsForCall, struct{}{})
 	fake.recordInvocation("ConsortiumsConfig", []interface{}{})
 	fake.consortiumsConfigMutex.Unlock()
 	if fake.ConsortiumsConfigStub != nil {
@@ -319,8 +308,7 @@ func (fake *Resources) ConsortiumsConfigReturnsOnCall(i int, result1 channelconf
 func (fake *Resources) MSPManager() msp.MSPManager {
 	fake.mSPManagerMutex.Lock()
 	ret, specificReturn := fake.mSPManagerReturnsOnCall[len(fake.mSPManagerArgsForCall)]
-	fake.mSPManagerArgsForCall = append(fake.mSPManagerArgsForCall, struct {
-	}{})
+	fake.mSPManagerArgsForCall = append(fake.mSPManagerArgsForCall, struct{}{})
 	fake.recordInvocation("MSPManager", []interface{}{})
 	fake.mSPManagerMutex.Unlock()
 	if fake.MSPManagerStub != nil {
@@ -371,8 +359,7 @@ func (fake *Resources) MSPManagerReturnsOnCall(i int, result1 msp.MSPManager) {
 func (fake *Resources) OrdererConfig() (channelconfig.Orderer, bool) {
 	fake.ordererConfigMutex.Lock()
 	ret, specificReturn := fake.ordererConfigReturnsOnCall[len(fake.ordererConfigArgsForCall)]
-	fake.ordererConfigArgsForCall = append(fake.ordererConfigArgsForCall, struct {
-	}{})
+	fake.ordererConfigArgsForCall = append(fake.ordererConfigArgsForCall, struct{}{})
 	fake.recordInvocation("OrdererConfig", []interface{}{})
 	fake.ordererConfigMutex.Unlock()
 	if fake.OrdererConfigStub != nil {
@@ -426,8 +413,7 @@ func (fake *Resources) OrdererConfigReturnsOnCall(i int, result1 channelconfig.O
 func (fake *Resources) PolicyManager() policies.Manager {
 	fake.policyManagerMutex.Lock()
 	ret, specificReturn := fake.policyManagerReturnsOnCall[len(fake.policyManagerArgsForCall)]
-	fake.policyManagerArgsForCall = append(fake.policyManagerArgsForCall, struct {
-	}{})
+	fake.policyManagerArgsForCall = append(fake.policyManagerArgsForCall, struct{}{})
 	fake.recordInvocation("PolicyManager", []interface{}{})
 	fake.policyManagerMutex.Unlock()
 	if fake.PolicyManagerStub != nil {

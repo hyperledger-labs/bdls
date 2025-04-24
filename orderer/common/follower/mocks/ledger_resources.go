@@ -33,9 +33,8 @@ type LedgerResources struct {
 	}
 	ChannelIDStub        func() string
 	channelIDMutex       sync.RWMutex
-	channelIDArgsForCall []struct {
-	}
-	channelIDReturns struct {
+	channelIDArgsForCall []struct{}
+	channelIDReturns     struct {
 		result1 string
 	}
 	channelIDReturnsOnCall map[int]struct {
@@ -43,9 +42,8 @@ type LedgerResources struct {
 	}
 	HeightStub        func() uint64
 	heightMutex       sync.RWMutex
-	heightArgsForCall []struct {
-	}
-	heightReturns struct {
+	heightArgsForCall []struct{}
+	heightReturns     struct {
 		result1 uint64
 	}
 	heightReturnsOnCall map[int]struct {
@@ -180,8 +178,7 @@ func (fake *LedgerResources) BlockReturnsOnCall(i int, result1 *common.Block) {
 func (fake *LedgerResources) ChannelID() string {
 	fake.channelIDMutex.Lock()
 	ret, specificReturn := fake.channelIDReturnsOnCall[len(fake.channelIDArgsForCall)]
-	fake.channelIDArgsForCall = append(fake.channelIDArgsForCall, struct {
-	}{})
+	fake.channelIDArgsForCall = append(fake.channelIDArgsForCall, struct{}{})
 	stub := fake.ChannelIDStub
 	fakeReturns := fake.channelIDReturns
 	fake.recordInvocation("ChannelID", []interface{}{})
@@ -233,8 +230,7 @@ func (fake *LedgerResources) ChannelIDReturnsOnCall(i int, result1 string) {
 func (fake *LedgerResources) Height() uint64 {
 	fake.heightMutex.Lock()
 	ret, specificReturn := fake.heightReturnsOnCall[len(fake.heightArgsForCall)]
-	fake.heightArgsForCall = append(fake.heightArgsForCall, struct {
-	}{})
+	fake.heightArgsForCall = append(fake.heightArgsForCall, struct{}{})
 	stub := fake.HeightStub
 	fakeReturns := fake.heightReturns
 	fake.recordInvocation("Height", []interface{}{})

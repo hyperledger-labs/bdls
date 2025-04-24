@@ -8,16 +8,14 @@ import (
 type HaltCallbacker struct {
 	HaltCallbackStub        func()
 	haltCallbackMutex       sync.RWMutex
-	haltCallbackArgsForCall []struct {
-	}
-	invocations      map[string][][]interface{}
-	invocationsMutex sync.RWMutex
+	haltCallbackArgsForCall []struct{}
+	invocations             map[string][][]interface{}
+	invocationsMutex        sync.RWMutex
 }
 
 func (fake *HaltCallbacker) HaltCallback() {
 	fake.haltCallbackMutex.Lock()
-	fake.haltCallbackArgsForCall = append(fake.haltCallbackArgsForCall, struct {
-	}{})
+	fake.haltCallbackArgsForCall = append(fake.haltCallbackArgsForCall, struct{}{})
 	stub := fake.HaltCallbackStub
 	fake.recordInvocation("HaltCallback", []interface{}{})
 	fake.haltCallbackMutex.Unlock()

@@ -13,9 +13,8 @@ import (
 type ABServer struct {
 	ContextStub        func() context.Context
 	contextMutex       sync.RWMutex
-	contextArgsForCall []struct {
-	}
-	contextReturns struct {
+	contextArgsForCall []struct{}
+	contextReturns     struct {
 		result1 context.Context
 	}
 	contextReturnsOnCall map[int]struct {
@@ -23,9 +22,8 @@ type ABServer struct {
 	}
 	RecvStub        func() (*common.Envelope, error)
 	recvMutex       sync.RWMutex
-	recvArgsForCall []struct {
-	}
-	recvReturns struct {
+	recvArgsForCall []struct{}
+	recvReturns     struct {
 		result1 *common.Envelope
 		result2 error
 	}
@@ -100,8 +98,7 @@ type ABServer struct {
 func (fake *ABServer) Context() context.Context {
 	fake.contextMutex.Lock()
 	ret, specificReturn := fake.contextReturnsOnCall[len(fake.contextArgsForCall)]
-	fake.contextArgsForCall = append(fake.contextArgsForCall, struct {
-	}{})
+	fake.contextArgsForCall = append(fake.contextArgsForCall, struct{}{})
 	fake.recordInvocation("Context", []interface{}{})
 	fake.contextMutex.Unlock()
 	if fake.ContextStub != nil {
@@ -152,8 +149,7 @@ func (fake *ABServer) ContextReturnsOnCall(i int, result1 context.Context) {
 func (fake *ABServer) Recv() (*common.Envelope, error) {
 	fake.recvMutex.Lock()
 	ret, specificReturn := fake.recvReturnsOnCall[len(fake.recvArgsForCall)]
-	fake.recvArgsForCall = append(fake.recvArgsForCall, struct {
-	}{})
+	fake.recvArgsForCall = append(fake.recvArgsForCall, struct{}{})
 	fake.recordInvocation("Recv", []interface{}{})
 	fake.recvMutex.Unlock()
 	if fake.RecvStub != nil {

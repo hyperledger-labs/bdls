@@ -66,7 +66,7 @@ type NamespaceExpiryData struct {
 	// for any number of missing pvt data of a collection,
 	// there would be an entry in the map
 	MissingData map[string]bool `protobuf:"bytes,2,rep,name=missingData,proto3" json:"missingData,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
-	//entries for hashes for the pvtdata key-values (loaded from snapshot data)
+	// entries for hashes for the pvtdata key-values (loaded from snapshot data)
 	BootKVHashes         map[string]*TxNums `protobuf:"bytes,3,rep,name=bootKVHashes,proto3" json:"bootKVHashes,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 package agent
 
 import (
@@ -14,7 +16,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
 
 	"github.com/BDLS-bft/bdls"
 	"github.com/BDLS-bft/bdls/crypto/blake2b"
@@ -38,7 +39,7 @@ type testParam struct {
 }
 
 func TestTCPPeer(t *testing.T) {
-	var params = []testParam{
+	params := []testParam{
 		{
 			numPeers:        20,
 			numParticipants: 20,

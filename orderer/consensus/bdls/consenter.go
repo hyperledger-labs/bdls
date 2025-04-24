@@ -14,7 +14,7 @@ import (
 	"code.cloudfoundry.org/clock"
 	"github.com/hyperledger/fabric-protos-go/common"
 
-	//cb "github.com/hyperledger/fabric-protos-go/common"
+	// cb "github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/msp"
 	ab "github.com/hyperledger/fabric-protos-go/orderer"
 
@@ -38,8 +38,7 @@ import (
 )
 
 // Config contains bdls configurations
-type Config struct {
-}
+type Config struct{}
 
 // ChainGetter obtains instances of ChainSupport for the given channel
 type ChainGetter interface {
@@ -72,7 +71,7 @@ type Consenter struct {
 
 // HandleChain returns a new Chain instance or an error upon failure
 func (c *Consenter) HandleChain(support consensus.ConsenterSupport, metadata *common.Metadata) (consensus.Chain, error) {
-	//configOptions := &smartbft.Options{}
+	// configOptions := &smartbft.Options{}
 	consenters := support.SharedConfig().Consenters()
 	/*if err := proto.Unmarshal(support.SharedConfig().ConsensusMetadata(), configOptions); err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal consensus metadata")
@@ -89,7 +88,7 @@ func (c *Consenter) HandleChain(support consensus.ConsenterSupport, metadata *co
 		c.Logger.Panicf("Failed initializing block puller")
 	}
 
-	//config, err := configFromMetadataOptions((uint64)(selfID), configOptions)
+	// config, err := configFromMetadataOptions((uint64)(selfID), configOptions)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed parsing smartbft configuration")
 	}
@@ -109,9 +108,9 @@ func (c *Consenter) HandleChain(support consensus.ConsenterSupport, metadata *co
 	}
 
 	chain, err := NewChain(
-		//configValidator,
+		// configValidator,
 		(uint64)(selfID),
-		//config,
+		// config,
 
 		path.Join(c.WALBaseDir, support.ChannelID()),
 		puller,
@@ -149,7 +148,7 @@ func New(
 ) *Consenter {
 	logger := flogging.MustGetLogger("orderer.consensus.bdls")
 
-	//var walConfig WALConfig
+	// var walConfig WALConfig
 
 	logger.Infof("Starting NEW bdls.....U-N-C-C****/////.......")
 	consenter := &Consenter{

@@ -56,7 +56,7 @@ func (c *Chain) TestOrderClient1(wg *sync.WaitGroup) {
 
 // This test will run after 20 second for network healthchck after TCP IO error being generated
 func (c *Chain) TestOrderClient2(wg *sync.WaitGroup) {
-	//time.Sleep(1000 * time.Millisecond)
+	// time.Sleep(1000 * time.Millisecond)
 	c.Logger.Infof("For client %v", 2)
 	for i := 0; i < 2500; i++ {
 		env := &common.Envelope{
@@ -72,7 +72,7 @@ func (c *Chain) TestOrderClient2(wg *sync.WaitGroup) {
 
 // This test will run after 20 second for network healthchck after TCP IO error being generated
 func (c *Chain) TestOrderClient3(wg *sync.WaitGroup) {
-	//time.Sleep(1000 * time.Millisecond)
+	// time.Sleep(1000 * time.Millisecond)
 	c.Logger.Infof("For client %v", 3)
 	for i := 0; i < 2500; i++ {
 		env := &common.Envelope{
@@ -88,7 +88,7 @@ func (c *Chain) TestOrderClient3(wg *sync.WaitGroup) {
 
 // This test will run after 20 second for network healthchck after TCP IO error being generated
 func (c *Chain) TestOrderClient4(wg *sync.WaitGroup) {
-	//time.Sleep(1000 * time.Millisecond)
+	// time.Sleep(1000 * time.Millisecond)
 	c.Logger.Infof("For client %v", 3)
 	for i := 0; i < 2500; i++ {
 		env := &common.Envelope{

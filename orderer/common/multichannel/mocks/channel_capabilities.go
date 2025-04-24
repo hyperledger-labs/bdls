@@ -10,9 +10,8 @@ import (
 type ChannelCapabilities struct {
 	ConsensusTypeBFTStub        func() bool
 	consensusTypeBFTMutex       sync.RWMutex
-	consensusTypeBFTArgsForCall []struct {
-	}
-	consensusTypeBFTReturns struct {
+	consensusTypeBFTArgsForCall []struct{}
+	consensusTypeBFTReturns     struct {
 		result1 bool
 	}
 	consensusTypeBFTReturnsOnCall map[int]struct {
@@ -20,9 +19,8 @@ type ChannelCapabilities struct {
 	}
 	ConsensusTypeMigrationStub        func() bool
 	consensusTypeMigrationMutex       sync.RWMutex
-	consensusTypeMigrationArgsForCall []struct {
-	}
-	consensusTypeMigrationReturns struct {
+	consensusTypeMigrationArgsForCall []struct{}
+	consensusTypeMigrationReturns     struct {
 		result1 bool
 	}
 	consensusTypeMigrationReturnsOnCall map[int]struct {
@@ -30,9 +28,8 @@ type ChannelCapabilities struct {
 	}
 	MSPVersionStub        func() msp.MSPVersion
 	mSPVersionMutex       sync.RWMutex
-	mSPVersionArgsForCall []struct {
-	}
-	mSPVersionReturns struct {
+	mSPVersionArgsForCall []struct{}
+	mSPVersionReturns     struct {
 		result1 msp.MSPVersion
 	}
 	mSPVersionReturnsOnCall map[int]struct {
@@ -40,9 +37,8 @@ type ChannelCapabilities struct {
 	}
 	OrgSpecificOrdererEndpointsStub        func() bool
 	orgSpecificOrdererEndpointsMutex       sync.RWMutex
-	orgSpecificOrdererEndpointsArgsForCall []struct {
-	}
-	orgSpecificOrdererEndpointsReturns struct {
+	orgSpecificOrdererEndpointsArgsForCall []struct{}
+	orgSpecificOrdererEndpointsReturns     struct {
 		result1 bool
 	}
 	orgSpecificOrdererEndpointsReturnsOnCall map[int]struct {
@@ -50,9 +46,8 @@ type ChannelCapabilities struct {
 	}
 	SupportedStub        func() error
 	supportedMutex       sync.RWMutex
-	supportedArgsForCall []struct {
-	}
-	supportedReturns struct {
+	supportedArgsForCall []struct{}
+	supportedReturns     struct {
 		result1 error
 	}
 	supportedReturnsOnCall map[int]struct {
@@ -65,8 +60,7 @@ type ChannelCapabilities struct {
 func (fake *ChannelCapabilities) ConsensusTypeBFT() bool {
 	fake.consensusTypeBFTMutex.Lock()
 	ret, specificReturn := fake.consensusTypeBFTReturnsOnCall[len(fake.consensusTypeBFTArgsForCall)]
-	fake.consensusTypeBFTArgsForCall = append(fake.consensusTypeBFTArgsForCall, struct {
-	}{})
+	fake.consensusTypeBFTArgsForCall = append(fake.consensusTypeBFTArgsForCall, struct{}{})
 	stub := fake.ConsensusTypeBFTStub
 	fakeReturns := fake.consensusTypeBFTReturns
 	fake.recordInvocation("ConsensusTypeBFT", []interface{}{})
@@ -118,8 +112,7 @@ func (fake *ChannelCapabilities) ConsensusTypeBFTReturnsOnCall(i int, result1 bo
 func (fake *ChannelCapabilities) ConsensusTypeMigration() bool {
 	fake.consensusTypeMigrationMutex.Lock()
 	ret, specificReturn := fake.consensusTypeMigrationReturnsOnCall[len(fake.consensusTypeMigrationArgsForCall)]
-	fake.consensusTypeMigrationArgsForCall = append(fake.consensusTypeMigrationArgsForCall, struct {
-	}{})
+	fake.consensusTypeMigrationArgsForCall = append(fake.consensusTypeMigrationArgsForCall, struct{}{})
 	stub := fake.ConsensusTypeMigrationStub
 	fakeReturns := fake.consensusTypeMigrationReturns
 	fake.recordInvocation("ConsensusTypeMigration", []interface{}{})
@@ -171,8 +164,7 @@ func (fake *ChannelCapabilities) ConsensusTypeMigrationReturnsOnCall(i int, resu
 func (fake *ChannelCapabilities) MSPVersion() msp.MSPVersion {
 	fake.mSPVersionMutex.Lock()
 	ret, specificReturn := fake.mSPVersionReturnsOnCall[len(fake.mSPVersionArgsForCall)]
-	fake.mSPVersionArgsForCall = append(fake.mSPVersionArgsForCall, struct {
-	}{})
+	fake.mSPVersionArgsForCall = append(fake.mSPVersionArgsForCall, struct{}{})
 	stub := fake.MSPVersionStub
 	fakeReturns := fake.mSPVersionReturns
 	fake.recordInvocation("MSPVersion", []interface{}{})
@@ -224,8 +216,7 @@ func (fake *ChannelCapabilities) MSPVersionReturnsOnCall(i int, result1 msp.MSPV
 func (fake *ChannelCapabilities) OrgSpecificOrdererEndpoints() bool {
 	fake.orgSpecificOrdererEndpointsMutex.Lock()
 	ret, specificReturn := fake.orgSpecificOrdererEndpointsReturnsOnCall[len(fake.orgSpecificOrdererEndpointsArgsForCall)]
-	fake.orgSpecificOrdererEndpointsArgsForCall = append(fake.orgSpecificOrdererEndpointsArgsForCall, struct {
-	}{})
+	fake.orgSpecificOrdererEndpointsArgsForCall = append(fake.orgSpecificOrdererEndpointsArgsForCall, struct{}{})
 	stub := fake.OrgSpecificOrdererEndpointsStub
 	fakeReturns := fake.orgSpecificOrdererEndpointsReturns
 	fake.recordInvocation("OrgSpecificOrdererEndpoints", []interface{}{})
@@ -277,8 +268,7 @@ func (fake *ChannelCapabilities) OrgSpecificOrdererEndpointsReturnsOnCall(i int,
 func (fake *ChannelCapabilities) Supported() error {
 	fake.supportedMutex.Lock()
 	ret, specificReturn := fake.supportedReturnsOnCall[len(fake.supportedArgsForCall)]
-	fake.supportedArgsForCall = append(fake.supportedArgsForCall, struct {
-	}{})
+	fake.supportedArgsForCall = append(fake.supportedArgsForCall, struct{}{})
 	stub := fake.SupportedStub
 	fakeReturns := fake.supportedReturns
 	fake.recordInvocation("Supported", []interface{}{})

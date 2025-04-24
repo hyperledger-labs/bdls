@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 package agent
 
 import (
@@ -17,7 +18,7 @@ import (
 	"github.com/BDLS-bft/bdls"
 	"github.com/BDLS-bft/bdls/crypto/blake2b"
 
-	proto "github.com/gogo/protobuf/proto"
+	proto "github.com/golang/protobuf/proto"
 )
 
 const (
@@ -247,7 +248,7 @@ func (p *TCPPeer) GetPublicKey() *ecdsa.PublicKey {
 	p.Lock()
 	defer p.Unlock()
 	if p.peerAuthStatus == peerAuthenticated {
-		//log.Println("get public key:", p.peerPublicKey)
+		// log.Println("get public key:", p.peerPublicKey)
 		return p.peerPublicKey
 	}
 	return nil
