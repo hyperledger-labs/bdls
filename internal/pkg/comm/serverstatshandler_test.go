@@ -58,7 +58,8 @@ func TestConnMetricsGRPCServer(t *testing.T) {
 		case "conn_closed":
 			return closedConn
 		default:
-			panic("unknown counter")
+			t.Fatalf("unknown counter")
+			return &metricsfakes.Counter{}
 		}
 	}
 

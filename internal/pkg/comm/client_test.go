@@ -175,7 +175,8 @@ func TestClientConfigDial(t *testing.T) {
 						if bytes.Equal(rawCerts[0], testCerts.ServerCert.Certificate[0]) {
 							return nil
 						}
-						panic("mismatched certificate")
+						t.Fatalf("mismatched certificate")
+						return errors.New("mismatched certificate")
 					},
 					Certificate:       testCerts.CertPEM,
 					Key:               testCerts.KeyPEM,
