@@ -25,9 +25,8 @@ type ChannelManagement struct {
 	}
 	ChannelListStub        func() types.ChannelList
 	channelListMutex       sync.RWMutex
-	channelListArgsForCall []struct {
-	}
-	channelListReturns struct {
+	channelListArgsForCall []struct{}
+	channelListReturns     struct {
 		result1 types.ChannelList
 	}
 	channelListReturnsOnCall map[int]struct {
@@ -128,8 +127,7 @@ func (fake *ChannelManagement) ChannelInfoReturnsOnCall(i int, result1 types.Cha
 func (fake *ChannelManagement) ChannelList() types.ChannelList {
 	fake.channelListMutex.Lock()
 	ret, specificReturn := fake.channelListReturnsOnCall[len(fake.channelListArgsForCall)]
-	fake.channelListArgsForCall = append(fake.channelListArgsForCall, struct {
-	}{})
+	fake.channelListArgsForCall = append(fake.channelListArgsForCall, struct{}{})
 	fake.recordInvocation("ChannelList", []interface{}{})
 	fake.channelListMutex.Unlock()
 	if fake.ChannelListStub != nil {

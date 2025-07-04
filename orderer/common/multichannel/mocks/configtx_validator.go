@@ -10,9 +10,8 @@ import (
 type ConfigTXValidator struct {
 	ChannelIDStub        func() string
 	channelIDMutex       sync.RWMutex
-	channelIDArgsForCall []struct {
-	}
-	channelIDReturns struct {
+	channelIDArgsForCall []struct{}
+	channelIDReturns     struct {
 		result1 string
 	}
 	channelIDReturnsOnCall map[int]struct {
@@ -20,9 +19,8 @@ type ConfigTXValidator struct {
 	}
 	ConfigProtoStub        func() *common.Config
 	configProtoMutex       sync.RWMutex
-	configProtoArgsForCall []struct {
-	}
-	configProtoReturns struct {
+	configProtoArgsForCall []struct{}
+	configProtoReturns     struct {
 		result1 *common.Config
 	}
 	configProtoReturnsOnCall map[int]struct {
@@ -43,9 +41,8 @@ type ConfigTXValidator struct {
 	}
 	SequenceStub        func() uint64
 	sequenceMutex       sync.RWMutex
-	sequenceArgsForCall []struct {
-	}
-	sequenceReturns struct {
+	sequenceArgsForCall []struct{}
+	sequenceReturns     struct {
 		result1 uint64
 	}
 	sequenceReturnsOnCall map[int]struct {
@@ -69,8 +66,7 @@ type ConfigTXValidator struct {
 func (fake *ConfigTXValidator) ChannelID() string {
 	fake.channelIDMutex.Lock()
 	ret, specificReturn := fake.channelIDReturnsOnCall[len(fake.channelIDArgsForCall)]
-	fake.channelIDArgsForCall = append(fake.channelIDArgsForCall, struct {
-	}{})
+	fake.channelIDArgsForCall = append(fake.channelIDArgsForCall, struct{}{})
 	stub := fake.ChannelIDStub
 	fakeReturns := fake.channelIDReturns
 	fake.recordInvocation("ChannelID", []interface{}{})
@@ -122,8 +118,7 @@ func (fake *ConfigTXValidator) ChannelIDReturnsOnCall(i int, result1 string) {
 func (fake *ConfigTXValidator) ConfigProto() *common.Config {
 	fake.configProtoMutex.Lock()
 	ret, specificReturn := fake.configProtoReturnsOnCall[len(fake.configProtoArgsForCall)]
-	fake.configProtoArgsForCall = append(fake.configProtoArgsForCall, struct {
-	}{})
+	fake.configProtoArgsForCall = append(fake.configProtoArgsForCall, struct{}{})
 	stub := fake.ConfigProtoStub
 	fakeReturns := fake.configProtoReturns
 	fake.recordInvocation("ConfigProto", []interface{}{})
@@ -239,8 +234,7 @@ func (fake *ConfigTXValidator) ProposeConfigUpdateReturnsOnCall(i int, result1 *
 func (fake *ConfigTXValidator) Sequence() uint64 {
 	fake.sequenceMutex.Lock()
 	ret, specificReturn := fake.sequenceReturnsOnCall[len(fake.sequenceArgsForCall)]
-	fake.sequenceArgsForCall = append(fake.sequenceArgsForCall, struct {
-	}{})
+	fake.sequenceArgsForCall = append(fake.sequenceArgsForCall, struct{}{})
 	stub := fake.SequenceStub
 	fakeReturns := fake.sequenceReturns
 	fake.recordInvocation("Sequence", []interface{}{})

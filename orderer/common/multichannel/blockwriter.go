@@ -208,8 +208,10 @@ func (bw *BlockWriter) commitBlock(encodedMetadataValue []byte) {
 	logger.Infof(" **************************************** The Total time is %v , The TPS value is %v", total, float64(100000*math.Pow(10, 9))/float64(total))
 }
 
-var startTime time.Time
-var endTime time.Time
+var (
+	startTime time.Time
+	endTime   time.Time
+)
 
 func SetTPSStart() {
 	startTime = time.Now()

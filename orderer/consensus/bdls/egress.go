@@ -9,7 +9,7 @@ package bdls
 import (
 	"sync/atomic"
 
-	//protos "github.com/SmartBFT-Go/consensus/smartbftprotos"
+	// protos "github.com/SmartBFT-Go/consensus/smartbftprotos"
 	"github.com/BDLS-bft/bdls"
 	"github.com/golang/protobuf/proto"
 	cb "github.com/hyperledger/fabric-protos-go/common"

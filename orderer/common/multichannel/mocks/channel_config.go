@@ -10,9 +10,8 @@ import (
 type ChannelConfig struct {
 	BlockDataHashingStructureWidthStub        func() uint32
 	blockDataHashingStructureWidthMutex       sync.RWMutex
-	blockDataHashingStructureWidthArgsForCall []struct {
-	}
-	blockDataHashingStructureWidthReturns struct {
+	blockDataHashingStructureWidthArgsForCall []struct{}
+	blockDataHashingStructureWidthReturns     struct {
 		result1 uint32
 	}
 	blockDataHashingStructureWidthReturnsOnCall map[int]struct {
@@ -20,9 +19,8 @@ type ChannelConfig struct {
 	}
 	CapabilitiesStub        func() channelconfig.ChannelCapabilities
 	capabilitiesMutex       sync.RWMutex
-	capabilitiesArgsForCall []struct {
-	}
-	capabilitiesReturns struct {
+	capabilitiesArgsForCall []struct{}
+	capabilitiesReturns     struct {
 		result1 channelconfig.ChannelCapabilities
 	}
 	capabilitiesReturnsOnCall map[int]struct {
@@ -30,9 +28,8 @@ type ChannelConfig struct {
 	}
 	HashingAlgorithmStub        func() func(input []byte) []byte
 	hashingAlgorithmMutex       sync.RWMutex
-	hashingAlgorithmArgsForCall []struct {
-	}
-	hashingAlgorithmReturns struct {
+	hashingAlgorithmArgsForCall []struct{}
+	hashingAlgorithmReturns     struct {
 		result1 func(input []byte) []byte
 	}
 	hashingAlgorithmReturnsOnCall map[int]struct {
@@ -40,9 +37,8 @@ type ChannelConfig struct {
 	}
 	OrdererAddressesStub        func() []string
 	ordererAddressesMutex       sync.RWMutex
-	ordererAddressesArgsForCall []struct {
-	}
-	ordererAddressesReturns struct {
+	ordererAddressesArgsForCall []struct{}
+	ordererAddressesReturns     struct {
 		result1 []string
 	}
 	ordererAddressesReturnsOnCall map[int]struct {
@@ -55,8 +51,7 @@ type ChannelConfig struct {
 func (fake *ChannelConfig) BlockDataHashingStructureWidth() uint32 {
 	fake.blockDataHashingStructureWidthMutex.Lock()
 	ret, specificReturn := fake.blockDataHashingStructureWidthReturnsOnCall[len(fake.blockDataHashingStructureWidthArgsForCall)]
-	fake.blockDataHashingStructureWidthArgsForCall = append(fake.blockDataHashingStructureWidthArgsForCall, struct {
-	}{})
+	fake.blockDataHashingStructureWidthArgsForCall = append(fake.blockDataHashingStructureWidthArgsForCall, struct{}{})
 	stub := fake.BlockDataHashingStructureWidthStub
 	fakeReturns := fake.blockDataHashingStructureWidthReturns
 	fake.recordInvocation("BlockDataHashingStructureWidth", []interface{}{})
@@ -108,8 +103,7 @@ func (fake *ChannelConfig) BlockDataHashingStructureWidthReturnsOnCall(i int, re
 func (fake *ChannelConfig) Capabilities() channelconfig.ChannelCapabilities {
 	fake.capabilitiesMutex.Lock()
 	ret, specificReturn := fake.capabilitiesReturnsOnCall[len(fake.capabilitiesArgsForCall)]
-	fake.capabilitiesArgsForCall = append(fake.capabilitiesArgsForCall, struct {
-	}{})
+	fake.capabilitiesArgsForCall = append(fake.capabilitiesArgsForCall, struct{}{})
 	stub := fake.CapabilitiesStub
 	fakeReturns := fake.capabilitiesReturns
 	fake.recordInvocation("Capabilities", []interface{}{})
@@ -161,8 +155,7 @@ func (fake *ChannelConfig) CapabilitiesReturnsOnCall(i int, result1 channelconfi
 func (fake *ChannelConfig) HashingAlgorithm() func(input []byte) []byte {
 	fake.hashingAlgorithmMutex.Lock()
 	ret, specificReturn := fake.hashingAlgorithmReturnsOnCall[len(fake.hashingAlgorithmArgsForCall)]
-	fake.hashingAlgorithmArgsForCall = append(fake.hashingAlgorithmArgsForCall, struct {
-	}{})
+	fake.hashingAlgorithmArgsForCall = append(fake.hashingAlgorithmArgsForCall, struct{}{})
 	stub := fake.HashingAlgorithmStub
 	fakeReturns := fake.hashingAlgorithmReturns
 	fake.recordInvocation("HashingAlgorithm", []interface{}{})
@@ -214,8 +207,7 @@ func (fake *ChannelConfig) HashingAlgorithmReturnsOnCall(i int, result1 func(inp
 func (fake *ChannelConfig) OrdererAddresses() []string {
 	fake.ordererAddressesMutex.Lock()
 	ret, specificReturn := fake.ordererAddressesReturnsOnCall[len(fake.ordererAddressesArgsForCall)]
-	fake.ordererAddressesArgsForCall = append(fake.ordererAddressesArgsForCall, struct {
-	}{})
+	fake.ordererAddressesArgsForCall = append(fake.ordererAddressesArgsForCall, struct{}{})
 	stub := fake.OrdererAddressesStub
 	fakeReturns := fake.ordererAddressesReturns
 	fake.recordInvocation("OrdererAddresses", []interface{}{})

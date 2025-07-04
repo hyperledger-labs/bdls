@@ -612,7 +612,6 @@ func isCandidate(state raft.StateType) bool {
 }
 
 func (c *Chain) run() {
-
 	// Calculate TPS
 	go c.TestMultiClients()
 

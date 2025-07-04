@@ -19,8 +19,7 @@ import (
 // TestMultiClients function runs multiple clients concurrently
 // Submits different envelopes to measure the TPS.
 func (c *Chain) TestMultiClients() {
-
-	c.logger.Info(" ------------------------------- c.raftID is: %v", c.raftID)
+	c.logger.Info(" ------------------------------- c.raftID is: ", c.raftID)
 	time.Sleep(10 * time.Second)
 	if c.raftID == 2 {
 		c.logger.Info("************* TEST TPS start---")
@@ -30,9 +29,9 @@ func (c *Chain) TestMultiClients() {
 		wg := new(sync.WaitGroup)
 		wg.Add(1)
 		go c.TestOrderClient1(wg)
-		//go c.TestOrderClient2(wg)
-		//go c.TestOrderClient3(wg)
-		//go c.TestOrderClient4(wg)
+		// go c.TestOrderClient2(wg)
+		// go c.TestOrderClient3(wg)
+		// go c.TestOrderClient4(wg)
 		wg.Wait()
 	}
 	/*end := time.Now()
@@ -59,7 +58,7 @@ func (c *Chain) TestOrderClient1(wg *sync.WaitGroup) {
 
 // This test will run after 20 second for network healthchck after TCP IO error being generated
 func (c *Chain) TestOrderClient2(wg *sync.WaitGroup) {
-	//time.Sleep(1000 * time.Millisecond)
+	// time.Sleep(1000 * time.Millisecond)
 	c.logger.Infof("For client %v", 2)
 	for i := 0; i < 2500; i++ {
 		env := &common.Envelope{
@@ -75,7 +74,7 @@ func (c *Chain) TestOrderClient2(wg *sync.WaitGroup) {
 
 // This test will run after 20 second for network healthchck after TCP IO error being generated
 func (c *Chain) TestOrderClient3(wg *sync.WaitGroup) {
-	//time.Sleep(1000 * time.Millisecond)
+	// time.Sleep(1000 * time.Millisecond)
 	c.logger.Infof("For client %v", 3)
 	for i := 0; i < 2500; i++ {
 		env := &common.Envelope{
@@ -91,7 +90,7 @@ func (c *Chain) TestOrderClient3(wg *sync.WaitGroup) {
 
 // This test will run after 20 second for network healthchck after TCP IO error being generated
 func (c *Chain) TestOrderClient4(wg *sync.WaitGroup) {
-	//time.Sleep(1000 * time.Millisecond)
+	// time.Sleep(1000 * time.Millisecond)
 	c.logger.Infof("For client %v", 3)
 	for i := 0; i < 2500; i++ {
 		env := &common.Envelope{

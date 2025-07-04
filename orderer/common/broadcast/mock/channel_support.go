@@ -90,9 +90,8 @@ type ChannelSupport struct {
 	}
 	WaitReadyStub        func() error
 	waitReadyMutex       sync.RWMutex
-	waitReadyArgsForCall []struct {
-	}
-	waitReadyReturns struct {
+	waitReadyArgsForCall []struct{}
+	waitReadyReturns     struct {
 		result1 error
 	}
 	waitReadyReturnsOnCall map[int]struct {
@@ -482,8 +481,7 @@ func (fake *ChannelSupport) ProcessNormalMsgReturnsOnCall(i int, result1 uint64,
 func (fake *ChannelSupport) WaitReady() error {
 	fake.waitReadyMutex.Lock()
 	ret, specificReturn := fake.waitReadyReturnsOnCall[len(fake.waitReadyArgsForCall)]
-	fake.waitReadyArgsForCall = append(fake.waitReadyArgsForCall, struct {
-	}{})
+	fake.waitReadyArgsForCall = append(fake.waitReadyArgsForCall, struct{}{})
 	fake.recordInvocation("WaitReady", []interface{}{})
 	fake.waitReadyMutex.Unlock()
 	if fake.WaitReadyStub != nil {

@@ -8,9 +8,8 @@ import (
 type SignerSerializer struct {
 	SerializeStub        func() ([]byte, error)
 	serializeMutex       sync.RWMutex
-	serializeArgsForCall []struct {
-	}
-	serializeReturns struct {
+	serializeArgsForCall []struct{}
+	serializeReturns     struct {
 		result1 []byte
 		result2 error
 	}
@@ -38,8 +37,7 @@ type SignerSerializer struct {
 func (fake *SignerSerializer) Serialize() ([]byte, error) {
 	fake.serializeMutex.Lock()
 	ret, specificReturn := fake.serializeReturnsOnCall[len(fake.serializeArgsForCall)]
-	fake.serializeArgsForCall = append(fake.serializeArgsForCall, struct {
-	}{})
+	fake.serializeArgsForCall = append(fake.serializeArgsForCall, struct{}{})
 	fake.recordInvocation("Serialize", []interface{}{})
 	fake.serializeMutex.Unlock()
 	if fake.SerializeStub != nil {

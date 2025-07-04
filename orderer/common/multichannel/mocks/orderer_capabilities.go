@@ -8,9 +8,8 @@ import (
 type OrdererCapabilities struct {
 	ConsensusTypeMigrationStub        func() bool
 	consensusTypeMigrationMutex       sync.RWMutex
-	consensusTypeMigrationArgsForCall []struct {
-	}
-	consensusTypeMigrationReturns struct {
+	consensusTypeMigrationArgsForCall []struct{}
+	consensusTypeMigrationReturns     struct {
 		result1 bool
 	}
 	consensusTypeMigrationReturnsOnCall map[int]struct {
@@ -18,9 +17,8 @@ type OrdererCapabilities struct {
 	}
 	ExpirationCheckStub        func() bool
 	expirationCheckMutex       sync.RWMutex
-	expirationCheckArgsForCall []struct {
-	}
-	expirationCheckReturns struct {
+	expirationCheckArgsForCall []struct{}
+	expirationCheckReturns     struct {
 		result1 bool
 	}
 	expirationCheckReturnsOnCall map[int]struct {
@@ -28,9 +26,8 @@ type OrdererCapabilities struct {
 	}
 	PredictableChannelTemplateStub        func() bool
 	predictableChannelTemplateMutex       sync.RWMutex
-	predictableChannelTemplateArgsForCall []struct {
-	}
-	predictableChannelTemplateReturns struct {
+	predictableChannelTemplateArgsForCall []struct{}
+	predictableChannelTemplateReturns     struct {
 		result1 bool
 	}
 	predictableChannelTemplateReturnsOnCall map[int]struct {
@@ -38,9 +35,8 @@ type OrdererCapabilities struct {
 	}
 	ResubmissionStub        func() bool
 	resubmissionMutex       sync.RWMutex
-	resubmissionArgsForCall []struct {
-	}
-	resubmissionReturns struct {
+	resubmissionArgsForCall []struct{}
+	resubmissionReturns     struct {
 		result1 bool
 	}
 	resubmissionReturnsOnCall map[int]struct {
@@ -48,9 +44,8 @@ type OrdererCapabilities struct {
 	}
 	SupportedStub        func() error
 	supportedMutex       sync.RWMutex
-	supportedArgsForCall []struct {
-	}
-	supportedReturns struct {
+	supportedArgsForCall []struct{}
+	supportedReturns     struct {
 		result1 error
 	}
 	supportedReturnsOnCall map[int]struct {
@@ -58,9 +53,8 @@ type OrdererCapabilities struct {
 	}
 	UseChannelCreationPolicyAsAdminsStub        func() bool
 	useChannelCreationPolicyAsAdminsMutex       sync.RWMutex
-	useChannelCreationPolicyAsAdminsArgsForCall []struct {
-	}
-	useChannelCreationPolicyAsAdminsReturns struct {
+	useChannelCreationPolicyAsAdminsArgsForCall []struct{}
+	useChannelCreationPolicyAsAdminsReturns     struct {
 		result1 bool
 	}
 	useChannelCreationPolicyAsAdminsReturnsOnCall map[int]struct {
@@ -73,8 +67,7 @@ type OrdererCapabilities struct {
 func (fake *OrdererCapabilities) ConsensusTypeMigration() bool {
 	fake.consensusTypeMigrationMutex.Lock()
 	ret, specificReturn := fake.consensusTypeMigrationReturnsOnCall[len(fake.consensusTypeMigrationArgsForCall)]
-	fake.consensusTypeMigrationArgsForCall = append(fake.consensusTypeMigrationArgsForCall, struct {
-	}{})
+	fake.consensusTypeMigrationArgsForCall = append(fake.consensusTypeMigrationArgsForCall, struct{}{})
 	stub := fake.ConsensusTypeMigrationStub
 	fakeReturns := fake.consensusTypeMigrationReturns
 	fake.recordInvocation("ConsensusTypeMigration", []interface{}{})
@@ -126,8 +119,7 @@ func (fake *OrdererCapabilities) ConsensusTypeMigrationReturnsOnCall(i int, resu
 func (fake *OrdererCapabilities) ExpirationCheck() bool {
 	fake.expirationCheckMutex.Lock()
 	ret, specificReturn := fake.expirationCheckReturnsOnCall[len(fake.expirationCheckArgsForCall)]
-	fake.expirationCheckArgsForCall = append(fake.expirationCheckArgsForCall, struct {
-	}{})
+	fake.expirationCheckArgsForCall = append(fake.expirationCheckArgsForCall, struct{}{})
 	stub := fake.ExpirationCheckStub
 	fakeReturns := fake.expirationCheckReturns
 	fake.recordInvocation("ExpirationCheck", []interface{}{})
@@ -179,8 +171,7 @@ func (fake *OrdererCapabilities) ExpirationCheckReturnsOnCall(i int, result1 boo
 func (fake *OrdererCapabilities) PredictableChannelTemplate() bool {
 	fake.predictableChannelTemplateMutex.Lock()
 	ret, specificReturn := fake.predictableChannelTemplateReturnsOnCall[len(fake.predictableChannelTemplateArgsForCall)]
-	fake.predictableChannelTemplateArgsForCall = append(fake.predictableChannelTemplateArgsForCall, struct {
-	}{})
+	fake.predictableChannelTemplateArgsForCall = append(fake.predictableChannelTemplateArgsForCall, struct{}{})
 	stub := fake.PredictableChannelTemplateStub
 	fakeReturns := fake.predictableChannelTemplateReturns
 	fake.recordInvocation("PredictableChannelTemplate", []interface{}{})
@@ -232,8 +223,7 @@ func (fake *OrdererCapabilities) PredictableChannelTemplateReturnsOnCall(i int, 
 func (fake *OrdererCapabilities) Resubmission() bool {
 	fake.resubmissionMutex.Lock()
 	ret, specificReturn := fake.resubmissionReturnsOnCall[len(fake.resubmissionArgsForCall)]
-	fake.resubmissionArgsForCall = append(fake.resubmissionArgsForCall, struct {
-	}{})
+	fake.resubmissionArgsForCall = append(fake.resubmissionArgsForCall, struct{}{})
 	stub := fake.ResubmissionStub
 	fakeReturns := fake.resubmissionReturns
 	fake.recordInvocation("Resubmission", []interface{}{})
@@ -285,8 +275,7 @@ func (fake *OrdererCapabilities) ResubmissionReturnsOnCall(i int, result1 bool) 
 func (fake *OrdererCapabilities) Supported() error {
 	fake.supportedMutex.Lock()
 	ret, specificReturn := fake.supportedReturnsOnCall[len(fake.supportedArgsForCall)]
-	fake.supportedArgsForCall = append(fake.supportedArgsForCall, struct {
-	}{})
+	fake.supportedArgsForCall = append(fake.supportedArgsForCall, struct{}{})
 	stub := fake.SupportedStub
 	fakeReturns := fake.supportedReturns
 	fake.recordInvocation("Supported", []interface{}{})
@@ -338,8 +327,7 @@ func (fake *OrdererCapabilities) SupportedReturnsOnCall(i int, result1 error) {
 func (fake *OrdererCapabilities) UseChannelCreationPolicyAsAdmins() bool {
 	fake.useChannelCreationPolicyAsAdminsMutex.Lock()
 	ret, specificReturn := fake.useChannelCreationPolicyAsAdminsReturnsOnCall[len(fake.useChannelCreationPolicyAsAdminsArgsForCall)]
-	fake.useChannelCreationPolicyAsAdminsArgsForCall = append(fake.useChannelCreationPolicyAsAdminsArgsForCall, struct {
-	}{})
+	fake.useChannelCreationPolicyAsAdminsArgsForCall = append(fake.useChannelCreationPolicyAsAdminsArgsForCall, struct{}{})
 	stub := fake.UseChannelCreationPolicyAsAdminsStub
 	fakeReturns := fake.useChannelCreationPolicyAsAdminsReturns
 	fake.recordInvocation("UseChannelCreationPolicyAsAdmins", []interface{}{})

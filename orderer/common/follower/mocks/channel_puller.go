@@ -10,15 +10,13 @@ import (
 )
 
 type ChannelPuller struct {
-	CloseStub        func()
-	closeMutex       sync.RWMutex
-	closeArgsForCall []struct {
-	}
+	CloseStub                     func()
+	closeMutex                    sync.RWMutex
+	closeArgsForCall              []struct{}
 	HeightsByEndpointsStub        func() (map[string]uint64, error)
 	heightsByEndpointsMutex       sync.RWMutex
-	heightsByEndpointsArgsForCall []struct {
-	}
-	heightsByEndpointsReturns struct {
+	heightsByEndpointsArgsForCall []struct{}
+	heightsByEndpointsReturns     struct {
 		result1 map[string]uint64
 		result2 error
 	}
@@ -48,8 +46,7 @@ type ChannelPuller struct {
 
 func (fake *ChannelPuller) Close() {
 	fake.closeMutex.Lock()
-	fake.closeArgsForCall = append(fake.closeArgsForCall, struct {
-	}{})
+	fake.closeArgsForCall = append(fake.closeArgsForCall, struct{}{})
 	stub := fake.CloseStub
 	fake.recordInvocation("Close", []interface{}{})
 	fake.closeMutex.Unlock()
@@ -73,8 +70,7 @@ func (fake *ChannelPuller) CloseCalls(stub func()) {
 func (fake *ChannelPuller) HeightsByEndpoints() (map[string]uint64, error) {
 	fake.heightsByEndpointsMutex.Lock()
 	ret, specificReturn := fake.heightsByEndpointsReturnsOnCall[len(fake.heightsByEndpointsArgsForCall)]
-	fake.heightsByEndpointsArgsForCall = append(fake.heightsByEndpointsArgsForCall, struct {
-	}{})
+	fake.heightsByEndpointsArgsForCall = append(fake.heightsByEndpointsArgsForCall, struct{}{})
 	stub := fake.HeightsByEndpointsStub
 	fakeReturns := fake.heightsByEndpointsReturns
 	fake.recordInvocation("HeightsByEndpoints", []interface{}{})

@@ -24,9 +24,8 @@ type MSP struct {
 	}
 	GetDefaultSigningIdentityStub        func() (msp.SigningIdentity, error)
 	getDefaultSigningIdentityMutex       sync.RWMutex
-	getDefaultSigningIdentityArgsForCall []struct {
-	}
-	getDefaultSigningIdentityReturns struct {
+	getDefaultSigningIdentityArgsForCall []struct{}
+	getDefaultSigningIdentityReturns     struct {
 		result1 msp.SigningIdentity
 		result2 error
 	}
@@ -36,9 +35,8 @@ type MSP struct {
 	}
 	GetIdentifierStub        func() (string, error)
 	getIdentifierMutex       sync.RWMutex
-	getIdentifierArgsForCall []struct {
-	}
-	getIdentifierReturns struct {
+	getIdentifierArgsForCall []struct{}
+	getIdentifierReturns     struct {
 		result1 string
 		result2 error
 	}
@@ -48,9 +46,8 @@ type MSP struct {
 	}
 	GetTLSIntermediateCertsStub        func() [][]byte
 	getTLSIntermediateCertsMutex       sync.RWMutex
-	getTLSIntermediateCertsArgsForCall []struct {
-	}
-	getTLSIntermediateCertsReturns struct {
+	getTLSIntermediateCertsArgsForCall []struct{}
+	getTLSIntermediateCertsReturns     struct {
 		result1 [][]byte
 	}
 	getTLSIntermediateCertsReturnsOnCall map[int]struct {
@@ -58,9 +55,8 @@ type MSP struct {
 	}
 	GetTLSRootCertsStub        func() [][]byte
 	getTLSRootCertsMutex       sync.RWMutex
-	getTLSRootCertsArgsForCall []struct {
-	}
-	getTLSRootCertsReturns struct {
+	getTLSRootCertsArgsForCall []struct{}
+	getTLSRootCertsReturns     struct {
 		result1 [][]byte
 	}
 	getTLSRootCertsReturnsOnCall map[int]struct {
@@ -68,9 +64,8 @@ type MSP struct {
 	}
 	GetTypeStub        func() msp.ProviderType
 	getTypeMutex       sync.RWMutex
-	getTypeArgsForCall []struct {
-	}
-	getTypeReturns struct {
+	getTypeArgsForCall []struct{}
+	getTypeReturns     struct {
 		result1 msp.ProviderType
 	}
 	getTypeReturnsOnCall map[int]struct {
@@ -78,9 +73,8 @@ type MSP struct {
 	}
 	GetVersionStub        func() msp.MSPVersion
 	getVersionMutex       sync.RWMutex
-	getVersionArgsForCall []struct {
-	}
-	getVersionReturns struct {
+	getVersionArgsForCall []struct{}
+	getVersionReturns     struct {
 		result1 msp.MSPVersion
 	}
 	getVersionReturnsOnCall map[int]struct {
@@ -207,8 +201,7 @@ func (fake *MSP) DeserializeIdentityReturnsOnCall(i int, result1 msp.Identity, r
 func (fake *MSP) GetDefaultSigningIdentity() (msp.SigningIdentity, error) {
 	fake.getDefaultSigningIdentityMutex.Lock()
 	ret, specificReturn := fake.getDefaultSigningIdentityReturnsOnCall[len(fake.getDefaultSigningIdentityArgsForCall)]
-	fake.getDefaultSigningIdentityArgsForCall = append(fake.getDefaultSigningIdentityArgsForCall, struct {
-	}{})
+	fake.getDefaultSigningIdentityArgsForCall = append(fake.getDefaultSigningIdentityArgsForCall, struct{}{})
 	stub := fake.GetDefaultSigningIdentityStub
 	fakeReturns := fake.getDefaultSigningIdentityReturns
 	fake.recordInvocation("GetDefaultSigningIdentity", []interface{}{})
@@ -263,8 +256,7 @@ func (fake *MSP) GetDefaultSigningIdentityReturnsOnCall(i int, result1 msp.Signi
 func (fake *MSP) GetIdentifier() (string, error) {
 	fake.getIdentifierMutex.Lock()
 	ret, specificReturn := fake.getIdentifierReturnsOnCall[len(fake.getIdentifierArgsForCall)]
-	fake.getIdentifierArgsForCall = append(fake.getIdentifierArgsForCall, struct {
-	}{})
+	fake.getIdentifierArgsForCall = append(fake.getIdentifierArgsForCall, struct{}{})
 	stub := fake.GetIdentifierStub
 	fakeReturns := fake.getIdentifierReturns
 	fake.recordInvocation("GetIdentifier", []interface{}{})
@@ -319,8 +311,7 @@ func (fake *MSP) GetIdentifierReturnsOnCall(i int, result1 string, result2 error
 func (fake *MSP) GetTLSIntermediateCerts() [][]byte {
 	fake.getTLSIntermediateCertsMutex.Lock()
 	ret, specificReturn := fake.getTLSIntermediateCertsReturnsOnCall[len(fake.getTLSIntermediateCertsArgsForCall)]
-	fake.getTLSIntermediateCertsArgsForCall = append(fake.getTLSIntermediateCertsArgsForCall, struct {
-	}{})
+	fake.getTLSIntermediateCertsArgsForCall = append(fake.getTLSIntermediateCertsArgsForCall, struct{}{})
 	stub := fake.GetTLSIntermediateCertsStub
 	fakeReturns := fake.getTLSIntermediateCertsReturns
 	fake.recordInvocation("GetTLSIntermediateCerts", []interface{}{})
@@ -372,8 +363,7 @@ func (fake *MSP) GetTLSIntermediateCertsReturnsOnCall(i int, result1 [][]byte) {
 func (fake *MSP) GetTLSRootCerts() [][]byte {
 	fake.getTLSRootCertsMutex.Lock()
 	ret, specificReturn := fake.getTLSRootCertsReturnsOnCall[len(fake.getTLSRootCertsArgsForCall)]
-	fake.getTLSRootCertsArgsForCall = append(fake.getTLSRootCertsArgsForCall, struct {
-	}{})
+	fake.getTLSRootCertsArgsForCall = append(fake.getTLSRootCertsArgsForCall, struct{}{})
 	stub := fake.GetTLSRootCertsStub
 	fakeReturns := fake.getTLSRootCertsReturns
 	fake.recordInvocation("GetTLSRootCerts", []interface{}{})
@@ -425,8 +415,7 @@ func (fake *MSP) GetTLSRootCertsReturnsOnCall(i int, result1 [][]byte) {
 func (fake *MSP) GetType() msp.ProviderType {
 	fake.getTypeMutex.Lock()
 	ret, specificReturn := fake.getTypeReturnsOnCall[len(fake.getTypeArgsForCall)]
-	fake.getTypeArgsForCall = append(fake.getTypeArgsForCall, struct {
-	}{})
+	fake.getTypeArgsForCall = append(fake.getTypeArgsForCall, struct{}{})
 	stub := fake.GetTypeStub
 	fakeReturns := fake.getTypeReturns
 	fake.recordInvocation("GetType", []interface{}{})
@@ -478,8 +467,7 @@ func (fake *MSP) GetTypeReturnsOnCall(i int, result1 msp.ProviderType) {
 func (fake *MSP) GetVersion() msp.MSPVersion {
 	fake.getVersionMutex.Lock()
 	ret, specificReturn := fake.getVersionReturnsOnCall[len(fake.getVersionArgsForCall)]
-	fake.getVersionArgsForCall = append(fake.getVersionArgsForCall, struct {
-	}{})
+	fake.getVersionArgsForCall = append(fake.getVersionArgsForCall, struct{}{})
 	stub := fake.GetVersionStub
 	fakeReturns := fake.getVersionReturns
 	fake.recordInvocation("GetVersion", []interface{}{})

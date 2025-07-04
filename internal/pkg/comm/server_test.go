@@ -13,7 +13,6 @@ import (
 	"crypto/x509"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"os"
 	"path/filepath"
@@ -72,7 +71,7 @@ func init() {
 	for i := 1; i <= numOrgs; i++ {
 		testOrg, err := loadOrg(i)
 		if err != nil {
-			log.Fatalf("Failed to load test organizations due to error: %s", err.Error())
+			panic(fmt.Errorf("Failed to load test organizations due to error: %s", err.Error()))
 		}
 		testOrgs = append(testOrgs, testOrg)
 	}
@@ -1050,7 +1049,7 @@ func TestUpdateTLSCert(t *testing.T) {
 		fName := filepath.Join("testdata", "dynamic_cert_update", path)
 		data, err := os.ReadFile(fName)
 		if err != nil {
-			panic(fmt.Errorf("Failed reading %s: %v", fName, err))
+			t.Fatalf("Failed reading %s: %v", fName, err)
 		}
 		return data
 	}
