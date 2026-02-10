@@ -17,7 +17,7 @@ Weekly meeting on Thursday every 2 week(s)
 
 ```
 2026 Update !!
-Next meeting: See you Thursday, Jan-08 at 9:30 AM
+Next meeting: See you Thursday, March 12 at 9:30 AM
 9:30am to 10:00am Eastern Time (EST)
 Repeats:
 Every 2 weeks on Thursday
