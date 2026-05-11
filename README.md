@@ -19,7 +19,7 @@ Weekly meeting on Thursday every 2 week(s)
 [!IMPORTANT] NEXT MEETING ON MARCH, WE WILL ANNOUNCE THE DATE IN BELLOW SECTION
 ```
 2026 Update !!
-<!-- Next meeting: See you Thursday, in May-07 at 9:30 AM -->
+<!-- Next meeting: See you Thursday, in May-21 at 9:30 AM -->
 9:30am to 10:00am Eastern Time (EST)
 Repeats:
 Every 2 weeks on Thursday
