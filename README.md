@@ -16,7 +16,7 @@ Weekly meeting on Thursday every 2 week(s)
 [ZOOM](https://zoom-lfx.platform.linuxfoundation.org/meeting/98760223865?password=e6523117-140a-48e8-992b-c1c6545489f6)
 
 
-[!IMPORTANT] NEXT MEETING ON MARCH, WE WILL ANNOUNCE THE DATE IN BELLOW SECTION
+[!IMPORTANT] NEXT MEETING DATE WILL BE ANNOUNCED IN THE SECTION BELOW
 ```
 2026 Update !!
 
