@@ -16,10 +16,12 @@ Weekly meeting on Thursday every 2 week(s)
 [ZOOM](https://zoom-lfx.platform.linuxfoundation.org/meeting/98760223865?password=e6523117-140a-48e8-992b-c1c6545489f6)
 
 
-[!IMPORTANT] NEXT MEETING ON MARCH, WE WILL ANNOUNCE THE DATE IN BELLOW SECTION
+[!IMPORTANT] NEXT MEETING DATE WILL BE ANNOUNCED IN THE SECTION BELOW
 ```
 2026 Update !!
-<!-- Next meeting: See you Thursday, in July-30 at 9:30 AM -->
+
+<!-- Next meeting: See you Thursday, in Aug-27 at 9:30 AM -->
+
 9:30am to 10:00am Eastern Time (EST)
 Repeats:
 Every 2 weeks on Thursday
